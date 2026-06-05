@@ -1,5 +1,7 @@
 package com.jam.ping.user.domain;
 
+import com.jam.ping.user.code.AuthProvider;
+import com.jam.ping.user.code.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

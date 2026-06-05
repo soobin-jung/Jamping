@@ -1,4 +1,4 @@
-package com.jam.ping.user.domain;
+package com.jam.ping.user.code;
 
 public enum AuthProvider {
     GOOGLE,

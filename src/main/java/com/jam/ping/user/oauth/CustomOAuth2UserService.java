@@ -1,10 +1,11 @@
 package com.jam.ping.user.oauth;
 
+import com.jam.ping.user.code.UserRole;
 import com.jam.ping.user.domain.User;
-import com.jam.ping.user.domain.UserRole;
 import com.jam.ping.user.oauth.provider.OAuth2UserInfoExtractor;
 import com.jam.ping.user.repository.UserRepository;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -15,23 +16,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();
     private final UserRepository userRepository;
     private final List<OAuth2UserInfoExtractor> extractors;
 
-    public CustomOAuth2UserService(
-            UserRepository userRepository,
-            List<OAuth2UserInfoExtractor> extractors
-    ) {
-        this.userRepository = userRepository;
-        this.extractors = extractors;
-    }
-
     /**
-     * OAuth 제공자에서 내려준 사용자 정보를 조회한 뒤,
-     * 우리 서비스 기준 사용자 정보로 정규화하고 회원을 저장 또는 갱신합니다.
+     * OAuth 제공자에게서 내려준 사용자 정보를 조회하고,
+     * 우리 서비스 기준 사용자 정보로 정규화한 뒤 회원을 생성 또는 갱신합니다.
      */
     @Override
     @Transactional
@@ -83,15 +77,16 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     }
 
     /**
-     * 세션에 저장될 인증 주체를 생성합니다.
-     * 이후 컨트롤러에서는 이 객체를 통해 provider, nickname 등의 값을 조회합니다.
+     * 세션에 저장할 인증 주체 객체를 생성합니다.
      */
     private OAuth2User createPrincipal(User user, OAuth2UserInfo oauth2UserInfo) {
         return new CustomOAuth2User(
+                user.getId(),
                 user.getProvider(),
                 user.getProviderUserId(),
                 user.getEmail(),
                 user.getNickname(),
+                user.getRole(),
                 List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())),
                 oauth2UserInfo.attributes()
         );

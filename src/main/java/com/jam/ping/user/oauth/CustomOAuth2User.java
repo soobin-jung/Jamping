@@ -1,6 +1,7 @@
 package com.jam.ping.user.oauth;
 
-import com.jam.ping.user.domain.AuthProvider;
+import com.jam.ping.user.code.AuthProvider;
+import com.jam.ping.user.code.UserRole;
 import java.util.Collection;
 import java.util.Map;
 import org.springframework.security.core.GrantedAuthority;
@@ -8,27 +9,40 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 
 public class CustomOAuth2User implements OAuth2User {
 
+    private final Long userId;
     private final AuthProvider provider;
     private final String providerUserId;
     private final String email;
     private final String nickname;
+    private final UserRole role;
     private final Collection<? extends GrantedAuthority> authorities;
     private final Map<String, Object> attributes;
 
     public CustomOAuth2User(
+            Long userId,
             AuthProvider provider,
             String providerUserId,
             String email,
             String nickname,
+            UserRole role,
             Collection<? extends GrantedAuthority> authorities,
             Map<String, Object> attributes
     ) {
+        this.userId = userId;
         this.provider = provider;
         this.providerUserId = providerUserId;
         this.email = email;
         this.nickname = nickname;
+        this.role = role;
         this.authorities = authorities;
         this.attributes = attributes;
+    }
+
+    /**
+     * 현재 로그인한 사용자 엔티티의 ID를 반환합니다.
+     */
+    public Long getUserId() {
+        return userId;
     }
 
     /**
@@ -39,7 +53,7 @@ public class CustomOAuth2User implements OAuth2User {
     }
 
     /**
-     * 제공자 내부에서 사용자를 식별하는 고유 ID를 반환합니다.
+     * 소셜 제공자 내부에서 사용자를 식별하는 고유 ID를 반환합니다.
      */
     public String getProviderUserId() {
         return providerUserId;
@@ -61,6 +75,13 @@ public class CustomOAuth2User implements OAuth2User {
     }
 
     /**
+     * 현재 로그인한 사용자의 권한 역할을 반환합니다.
+     */
+    public UserRole getRole() {
+        return role;
+    }
+
+    /**
      * OAuth 제공자가 내려준 원본 속성 맵을 반환합니다.
      */
     @Override
@@ -78,7 +99,6 @@ public class CustomOAuth2User implements OAuth2User {
 
     /**
      * Spring Security가 인증 주체를 식별할 때 사용할 이름을 반환합니다.
-     * providerUserId를 기준 식별자로 사용합니다.
      */
     @Override
     public String getName() {

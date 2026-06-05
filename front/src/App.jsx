@@ -1,63 +1,124 @@
-import { useEffect, useState } from "react";
-
-const API_BASE_URL = "http://localhost:8080";
+import { useEffect, useMemo, useState } from "react";
+import { PublicHome } from "./components/PublicHome";
+import { AdminLayout } from "./components/admin/AdminLayout";
+import { AdminDashboard } from "./components/admin/AdminDashboard";
+import { CategoryManagement } from "./components/admin/CategoryManagement";
+import { GearManagement } from "./components/admin/GearManagement";
+import { MakerManagement } from "./components/admin/MakerManagement";
+import { ADMIN_MENU, API_BASE_URL } from "./constants/admin";
+import { useCategories } from "./hooks/useCategories";
+import { useCurrentUser } from "./hooks/useCurrentUser";
+import { useGears } from "./hooks/useGears";
+import { useMakers } from "./hooks/useMakers";
 
 function App() {
-  const [me, setMe] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [modalMode, setModalMode] = useState(null);
+  const [pathname, setPathname] = useState(window.location.pathname);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const { me, loading, setMe } = useCurrentUser();
+
+  const isAdminPage = pathname.startsWith("/admin");
+
+  const activeAdminMenu = useMemo(() => {
+    if (pathname === "/admin" || pathname === "/admin/") {
+      return ADMIN_MENU.dashboard;
+    }
+
+    if (pathname.startsWith("/admin/categories")) {
+      return ADMIN_MENU.categories;
+    }
+
+    if (pathname.startsWith("/admin/makers")) {
+      return ADMIN_MENU.makers;
+    }
+
+    if (pathname.startsWith("/admin/gears")) {
+      return ADMIN_MENU.gears;
+    }
+
+    return ADMIN_MENU.dashboard;
+  }, [pathname]);
+
+  const activeAdminTitle = useMemo(() => {
+    if (activeAdminMenu === ADMIN_MENU.categories) {
+      return "장비 관리 > 카테고리 관리";
+    }
+
+    if (activeAdminMenu === ADMIN_MENU.makers) {
+      return "장비 관리 > 메이커 관리";
+    }
+
+    if (activeAdminMenu === ADMIN_MENU.gears) {
+      return "장비 관리 > 용품 관리";
+    }
+
+    return "대시보드";
+  }, [activeAdminMenu]);
+
+  const categoryState = useCategories({
+    enabled: isAdminPage && activeAdminMenu === ADMIN_MENU.categories && me?.role === "ADMIN"
+  });
+
+  const makerState = useMakers({
+    enabled: isAdminPage && activeAdminMenu === ADMIN_MENU.makers && me?.role === "ADMIN"
+  });
+
+  const gearState = useGears({
+    enabled: isAdminPage && activeAdminMenu === ADMIN_MENU.gears && me?.role === "ADMIN"
+  });
 
   /**
-   * 현재 세션의 로그인 사용자 정보를 조회합니다.
+   * 브라우저 이동과 맞춰 현재 경로 상태를 동기화합니다.
    */
-  async function loadMe() {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-        credentials: "include"
-      });
-
-      if (!response.ok) {
-        setMe(null);
-        return;
-      }
-
-      const data = await response.json();
-      setMe(data);
-    } catch (error) {
-      console.error("Failed to fetch current user", error);
-      setMe(null);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
-    loadMe();
+    const handlePopState = () => setPathname(window.location.pathname);
+    window.addEventListener("popstate", handlePopState);
+
+    return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
   /**
-   * 로그인 또는 회원가입 모달을 엽니다.
+   * 관리자 페이지 접근 시 로그인과 권한 상태를 함께 확인합니다.
    */
-  function openModal(mode) {
-    setModalMode(mode);
+  useEffect(() => {
+    if (!isAdminPage || loading) {
+      return;
+    }
+
+    if (!me) {
+      navigateTo("/");
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    if (me.role !== "ADMIN") {
+      navigateTo("/");
+    }
+  }, [isAdminPage, loading, me]);
+
+  /**
+   * 인증 모달을 엽니다.
+   */
+  function openAuthModal() {
+    setIsAuthModalOpen(true);
   }
 
   /**
    * 인증 모달을 닫습니다.
    */
-  function closeModal() {
-    setModalMode(null);
+  function closeAuthModal() {
+    setIsAuthModalOpen(false);
   }
 
   /**
-   * 선택한 소셜 로그인 제공자 인증 페이지로 이동합니다.
+   * 앱 내부 페이지 이동 시 현재 경로를 갱신합니다.
    */
-  function handleSocialLogin(provider) {
-    window.location.href = `${API_BASE_URL}/oauth2/authorization/${provider}`;
+  function navigateTo(path) {
+    window.history.pushState({}, "", path);
+    setPathname(path);
   }
 
   /**
-   * 현재 로그인 세션을 종료하고 화면 상태를 초기화합니다.
+   * 현재 세션을 종료하고 홈으로 이동합니다.
    */
   async function handleLogout() {
     try {
@@ -69,111 +130,55 @@ function App() {
       console.error("Failed to logout", error);
     } finally {
       setMe(null);
-      setModalMode(null);
-      setLoading(false);
+      setIsAuthModalOpen(false);
+      navigateTo("/");
     }
   }
 
-  const isAuthenticated = !loading && Boolean(me);
-  const modalTitle = modalMode === "signup" ? "회원가입" : "로그인";
-  const modalDescription =
-    modalMode === "signup"
-      ? "원하는 소셜 계정으로 Jamping에 처음 가입해보세요."
-      : "소셜 계정으로 간편하게 로그인하고 캠핑 팸을 시작해보세요.";
+  /**
+   * 현재 관리자 메뉴에 맞는 본문 컴포넌트를 반환합니다.
+   */
+  function renderAdminContent() {
+    if (activeAdminMenu === ADMIN_MENU.categories) {
+      return <CategoryManagement {...categoryState} />;
+    }
+
+    if (activeAdminMenu === ADMIN_MENU.makers) {
+      return <MakerManagement {...makerState} />;
+    }
+
+    if (activeAdminMenu === ADMIN_MENU.gears) {
+      return <GearManagement {...gearState} />;
+    }
+
+    return <AdminDashboard nickname={me?.nickname ?? ""} role={me?.role ?? ""} />;
+  }
+
+  if (isAdminPage) {
+    return (
+      <AdminLayout
+        loading={loading}
+        me={me}
+        activeMenu={activeAdminMenu}
+        activeTitle={activeAdminTitle}
+        onNavigate={navigateTo}
+        onLogout={handleLogout}
+      >
+        {renderAdminContent()}
+      </AdminLayout>
+    );
+  }
 
   return (
-    <main className="app-shell">
-      <header className="top-bar">
-        <div className="brand-mark">Jamping</div>
-        <div className="top-bar-actions">
-          {loading ? (
-            <span className="user-chip ghost-chip">확인 중...</span>
-          ) : isAuthenticated ? (
-            <div className="authenticated-actions">
-              <span className="user-chip">{me.nickname}</span>
-              <button type="button" className="ghost-button" onClick={handleLogout}>
-                로그아웃
-              </button>
-            </div>
-          ) : (
-            <>
-              <button type="button" className="ghost-button" onClick={() => openModal("login")}>
-                로그인
-              </button>
-              <button type="button" className="primary-button" onClick={() => openModal("signup")}>
-                회원가입
-              </button>
-            </>
-          )}
-        </div>
-      </header>
-
-      <section className="hero-card">
-        <p className="eyebrow">Camping Crew Platform</p>
-        <h1>Jamping</h1>
-        <p className="description">
-          캠핑 일정, 준비물, 식단, 추억까지 한 번에 관리하는 우리만의 캠핑 플랫폼
-        </p>
-
-        <div className="status-panel">
-          <span className="status-label">현재 상태</span>
-          {loading ? (
-            <p className="status-value">로그인 상태를 확인하고 있어요.</p>
-          ) : isAuthenticated ? (
-            <div className="profile-box">
-              <p className="status-value">{me.nickname}님, 반가워요.</p>
-              <p className="status-subtle">{me.email || "이메일 정보 없음"}</p>
-              <p className="status-subtle">provider: {me.provider}</p>
-            </div>
-          ) : (
-            <p className="status-value">로그인 없이도 둘러볼 수 있어요.</p>
-          )}
-        </div>
-      </section>
-
-      {modalMode && (
-        <div className="modal-backdrop" role="presentation" onClick={closeModal}>
-          <section
-            className="auth-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="auth-modal-title"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <button type="button" className="close-button" onClick={closeModal} aria-label="닫기">
-              ×
-            </button>
-            <p className="modal-kicker">Jamping Access</p>
-            <h2 id="auth-modal-title">{modalTitle}</h2>
-            <p className="modal-description">{modalDescription}</p>
-
-            <div className="button-stack">
-              <button
-                type="button"
-                className="naver-button"
-                onClick={() => handleSocialLogin("naver")}
-              >
-                네이버로 계속하기
-              </button>
-              <button
-                type="button"
-                className="kakao-button"
-                onClick={() => handleSocialLogin("kakao")}
-              >
-                카카오로 계속하기
-              </button>
-              <button
-                type="button"
-                className="google-button"
-                onClick={() => handleSocialLogin("google")}
-              >
-                구글로 계속하기
-              </button>
-            </div>
-          </section>
-        </div>
-      )}
-    </main>
+    <PublicHome
+      me={me}
+      loading={loading}
+      isAuthModalOpen={isAuthModalOpen}
+      onOpenAuthModal={openAuthModal}
+      onCloseAuthModal={closeAuthModal}
+      onNavigate={navigateTo}
+      onLogout={handleLogout}
+    />
   );
 }
 
