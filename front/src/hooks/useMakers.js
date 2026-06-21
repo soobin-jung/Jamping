@@ -63,6 +63,8 @@ export function useMakers({ enabled }) {
 
   useEffect(() => {
     if (!enabled) {
+      setMakerEditor(null);
+      setMakerError("");
       return;
     }
 

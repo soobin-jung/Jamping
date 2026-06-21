@@ -45,6 +45,17 @@ export function AdminLayout({ loading, me, activeMenu, activeTitle, onNavigate, 
           </button>
 
           <section className="admin-nav-group">
+            <p className="admin-nav-group-title">유저 관리</p>
+            <button
+              type="button"
+              className={`admin-nav-subitem ${activeMenu === ADMIN_MENU.users ? "active" : ""}`}
+              onClick={() => onNavigate("/admin/users")}
+            >
+              유저 관리
+            </button>
+          </section>
+
+          <section className="admin-nav-group">
             <p className="admin-nav-group-title">장비 관리</p>
             <button
               type="button"
@@ -65,7 +76,36 @@ export function AdminLayout({ loading, me, activeMenu, activeTitle, onNavigate, 
               className={`admin-nav-subitem ${activeMenu === ADMIN_MENU.gears ? "active" : ""}`}
               onClick={() => onNavigate("/admin/gears")}
             >
-              용품 관리
+              장비 관리
+            </button>
+          </section>
+
+          <section className="admin-nav-group">
+            <p className="admin-nav-group-title">레시피 관리</p>
+            <button
+              type="button"
+              className={`admin-nav-subitem ${activeMenu === ADMIN_MENU.recipeCategories ? "active" : ""}`}
+              onClick={() => onNavigate("/admin/recipe-categories")}
+            >
+              카테고리 관리
+            </button>
+            <button
+              type="button"
+              className={`admin-nav-subitem ${activeMenu === ADMIN_MENU.recipes ? "active" : ""}`}
+              onClick={() => onNavigate("/admin/recipes")}
+            >
+              레시피 관리
+            </button>
+          </section>
+
+          <section className="admin-nav-group">
+            <p className="admin-nav-group-title">사이트 관리</p>
+            <button
+              type="button"
+              className={`admin-nav-subitem ${activeMenu === ADMIN_MENU.campSites ? "active" : ""}`}
+              onClick={() => onNavigate("/admin/campsites")}
+            >
+              캠핑장 관리
             </button>
           </section>
         </nav>

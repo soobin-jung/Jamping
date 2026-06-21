@@ -63,6 +63,8 @@ export function useCategories({ enabled }) {
 
   useEffect(() => {
     if (!enabled) {
+      setCategoryEditor(null);
+      setCategoryError("");
       return;
     }
 

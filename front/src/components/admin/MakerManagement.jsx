@@ -155,7 +155,7 @@ export function MakerManagement({
                   <th width={50}>ID</th>
                   <th width={180}>메이커명</th>
                   <th width={180}>영문명</th>
-                  <th>홈페이지 주소</th>
+                  <th width={100} className="admin-action-column">홈페이지</th>
                   <th width={120}>등록자</th>
                   <th width={140}>등록일</th>
                   <th width={120}>수정자</th>
@@ -189,8 +189,22 @@ export function MakerManagement({
                       <td>
                         <div className="admin-cell-text">{maker.nameEng || "-"}</div>
                       </td>
-                      <td>
-                        <div className="admin-cell-text">{maker.homepageUrl || "-"}</div>
+                      <td className="admin-action-column">
+                        <div className="admin-row-actions">
+                          {maker.homepageUrl ? (
+                            <a
+                              href={maker.homepageUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="gear-link-icon"
+                              title={maker.homepageUrl}
+                            >
+                              ↗
+                            </a>
+                          ) : (
+                            "-"
+                          )}
+                        </div>
                       </td>
                       <td>
                         <div className="admin-cell-text">{maker.createdBy || "-"}</div>
