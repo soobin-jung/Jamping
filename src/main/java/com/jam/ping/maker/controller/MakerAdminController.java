@@ -2,12 +2,13 @@ package com.jam.ping.maker.controller;
 
 import com.jam.ping.global.response.ApiRes;
 import com.jam.ping.global.security.AdminOnly;
+import com.jam.ping.global.security.AuthUtils;
 import com.jam.ping.maker.controller.request.MakerRequest;
 import com.jam.ping.maker.controller.response.MakerPageResponse;
 import com.jam.ping.maker.controller.response.MakerResponse;
 import com.jam.ping.maker.domain.Maker;
 import com.jam.ping.maker.service.MakerService;
-import com.jam.ping.user.oauth.CustomOAuth2User;
+import com.jam.ping.user.main.oauth.CustomOAuth2User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,13 +28,10 @@ import org.springframework.web.bind.annotation.RestController;
 @AdminOnly
 @RequiredArgsConstructor
 @RequestMapping("/admin/makers")
-public class MakerController {
+public class MakerAdminController {
 
     private final MakerService makerService;
 
-    /**
-     * 관리자 화면에서 사용하는 메이커 목록을 검색 조건과 페이지 정보로 조회합니다.
-     */
     @GetMapping
     public ApiRes<MakerPageResponse> getMakers(
             @RequestParam(defaultValue = "") String keyword,
@@ -47,18 +45,12 @@ public class MakerController {
                 ));
     }
 
-    /**
-     * 단건 메이커 정보를 조회합니다.
-     */
     @GetMapping("/{makerId}")
     public ApiRes<MakerResponse> getMaker(@PathVariable Long makerId) {
         return new ApiRes<MakerResponse>()
                 .successData(MakerResponse.from(makerService.getMaker(makerId)));
     }
 
-    /**
-     * 새로운 메이커를 생성합니다.
-     */
     @PostMapping
     public ResponseEntity<ApiRes<MakerResponse>> createMaker(
             @Valid @RequestBody MakerRequest request,
@@ -68,7 +60,7 @@ public class MakerController {
                 request.name(),
                 request.nameEng(),
                 request.homepageUrl(),
-                resolveActorUserId(oauth2User)
+                AuthUtils.getActorUserId(oauth2User)
         );
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -78,9 +70,6 @@ public class MakerController {
                         .responseMsg("메이커가 등록되었습니다."));
     }
 
-    /**
-     * 기존 메이커 정보를 수정합니다.
-     */
     @PutMapping("/{makerId}")
     public ApiRes<MakerResponse> updateMaker(
             @PathVariable Long makerId,
@@ -92,7 +81,7 @@ public class MakerController {
                 request.name(),
                 request.nameEng(),
                 request.homepageUrl(),
-                resolveActorUserId(oauth2User)
+                AuthUtils.getActorUserId(oauth2User)
         );
 
         return new ApiRes<MakerResponse>()
@@ -101,9 +90,6 @@ public class MakerController {
                 .responseMsg("메이커가 수정되었습니다.");
     }
 
-    /**
-     * 선택한 메이커를 삭제합니다.
-     */
     @DeleteMapping("/{makerId}")
     public ApiRes<Void> deleteMaker(@PathVariable Long makerId) {
         makerService.deleteMaker(makerId);
@@ -113,14 +99,4 @@ public class MakerController {
                 .responseMsg("메이커가 삭제되었습니다.");
     }
 
-    /**
-     * 생성자와 수정자 기록에 사용할 사용자 ID를 반환합니다.
-     */
-    private Long resolveActorUserId(CustomOAuth2User oauth2User) {
-        if (oauth2User == null) {
-            return null;
-        }
-
-        return oauth2User.getUserId();
-    }
 }

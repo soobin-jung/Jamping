@@ -7,7 +7,8 @@ import com.jam.ping.gear.domain.Gear;
 import com.jam.ping.gear.service.GearService;
 import com.jam.ping.global.response.ApiRes;
 import com.jam.ping.global.security.AdminOnly;
-import com.jam.ping.user.oauth.CustomOAuth2User;
+import com.jam.ping.global.security.AuthUtils;
+import com.jam.ping.user.main.oauth.CustomOAuth2User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,13 +28,10 @@ import org.springframework.web.bind.annotation.RestController;
 @AdminOnly
 @RequiredArgsConstructor
 @RequestMapping("/admin/gears")
-public class GearController {
+public class GearAdminController {
 
     private final GearService gearService;
 
-    /**
-     * 관리자 화면에서 사용하는 용품 목록을 카테고리, 메이커, 검색어, 페이지 조건으로 조회합니다.
-     */
     @GetMapping
     public ApiRes<GearPageResponse> getGears(
             @RequestParam(required = false) Long categoryId,
@@ -51,18 +49,12 @@ public class GearController {
                 ));
     }
 
-    /**
-     * 단건 용품 정보를 조회합니다.
-     */
     @GetMapping("/{gearId}")
     public ApiRes<GearResponse> getGear(@PathVariable Long gearId) {
         return new ApiRes<GearResponse>()
                 .successData(GearResponse.from(gearService.getGear(gearId)));
     }
 
-    /**
-     * 새로운 용품을 생성합니다.
-     */
     @PostMapping
     public ResponseEntity<ApiRes<GearResponse>> createGear(
             @Valid @RequestBody GearRequest request,
@@ -75,7 +67,7 @@ public class GearController {
                 request.categoryId(),
                 request.makerId(),
                 request.memo(),
-                resolveActorUserId(oauth2User)
+                AuthUtils.getActorUserId(oauth2User)
         );
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -85,9 +77,6 @@ public class GearController {
                         .responseMsg("용품이 등록되었습니다."));
     }
 
-    /**
-     * 기존 용품 정보를 수정합니다.
-     */
     @PutMapping("/{gearId}")
     public ApiRes<GearResponse> updateGear(
             @PathVariable Long gearId,
@@ -102,7 +91,7 @@ public class GearController {
                 request.categoryId(),
                 request.makerId(),
                 request.memo(),
-                resolveActorUserId(oauth2User)
+                AuthUtils.getActorUserId(oauth2User)
         );
 
         return new ApiRes<GearResponse>()
@@ -111,9 +100,6 @@ public class GearController {
                 .responseMsg("용품이 수정되었습니다.");
     }
 
-    /**
-     * 선택한 용품을 삭제합니다.
-     */
     @DeleteMapping("/{gearId}")
     public ApiRes<Void> deleteGear(@PathVariable Long gearId) {
         gearService.deleteGear(gearId);
@@ -123,14 +109,4 @@ public class GearController {
                 .responseMsg("용품이 삭제되었습니다.");
     }
 
-    /**
-     * 생성자와 수정자 기록에 사용할 사용자 ID를 반환합니다.
-     */
-    private Long resolveActorUserId(CustomOAuth2User oauth2User) {
-        if (oauth2User == null) {
-            return null;
-        }
-
-        return oauth2User.getUserId();
-    }
 }

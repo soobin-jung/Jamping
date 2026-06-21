@@ -7,7 +7,8 @@ import com.jam.ping.category.domain.Category;
 import com.jam.ping.category.service.CategoryService;
 import com.jam.ping.global.response.ApiRes;
 import com.jam.ping.global.security.AdminOnly;
-import com.jam.ping.user.oauth.CustomOAuth2User;
+import com.jam.ping.global.security.AuthUtils;
+import com.jam.ping.user.main.oauth.CustomOAuth2User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,13 +28,10 @@ import org.springframework.web.bind.annotation.RestController;
 @AdminOnly
 @RequiredArgsConstructor
 @RequestMapping("/admin/categories")
-public class CategoryController {
+public class CategoryAdminController {
 
     private final CategoryService categoryService;
 
-    /**
-     * 관리자 화면에서 사용하는 카테고리 목록을 검색 조건과 페이지 정보로 조회합니다.
-     */
     @GetMapping
     public ApiRes<CategoryPageResponse> getCategories(
             @RequestParam(defaultValue = "") String keyword,
@@ -47,18 +45,12 @@ public class CategoryController {
                 ));
     }
 
-    /**
-     * 단건 카테고리 정보를 조회합니다.
-     */
     @GetMapping("/{categoryId}")
     public ApiRes<CategoryResponse> getCategory(@PathVariable Long categoryId) {
         return new ApiRes<CategoryResponse>()
                 .successData(CategoryResponse.from(categoryService.getCategory(categoryId)));
     }
 
-    /**
-     * 새로운 카테고리를 생성합니다.
-     */
     @PostMapping
     public ResponseEntity<ApiRes<CategoryResponse>> createCategory(
             @Valid @RequestBody CategoryRequest request,
@@ -67,7 +59,7 @@ public class CategoryController {
         Category category = categoryService.createCategory(
                 request.name(),
                 request.memo(),
-                resolveActorUserId(oauth2User)
+                AuthUtils.getActorUserId(oauth2User)
         );
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -77,9 +69,6 @@ public class CategoryController {
                         .responseMsg("카테고리가 등록되었습니다."));
     }
 
-    /**
-     * 기존 카테고리 정보를 수정합니다.
-     */
     @PutMapping("/{categoryId}")
     public ApiRes<CategoryResponse> updateCategory(
             @PathVariable Long categoryId,
@@ -90,7 +79,7 @@ public class CategoryController {
                 categoryId,
                 request.name(),
                 request.memo(),
-                resolveActorUserId(oauth2User)
+                AuthUtils.getActorUserId(oauth2User)
         );
 
         return new ApiRes<CategoryResponse>()
@@ -99,9 +88,6 @@ public class CategoryController {
                 .responseMsg("카테고리가 수정되었습니다.");
     }
 
-    /**
-     * 선택한 카테고리를 삭제합니다.
-     */
     @DeleteMapping("/{categoryId}")
     public ApiRes<Void> deleteCategory(@PathVariable Long categoryId) {
         categoryService.deleteCategory(categoryId);
@@ -111,14 +97,4 @@ public class CategoryController {
                 .responseMsg("카테고리가 삭제되었습니다.");
     }
 
-    /**
-     * 생성자와 수정자 기록에 사용할 사용자 ID를 반환합니다.
-     */
-    private Long resolveActorUserId(CustomOAuth2User oauth2User) {
-        if (oauth2User == null) {
-            return null;
-        }
-
-        return oauth2User.getUserId();
-    }
 }
