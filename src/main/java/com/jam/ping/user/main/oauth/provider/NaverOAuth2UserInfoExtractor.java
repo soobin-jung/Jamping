@@ -1,7 +1,7 @@
-package com.jam.ping.user.oauth.provider;
+package com.jam.ping.user.main.oauth.provider;
 
-import com.jam.ping.user.code.AuthProvider;
-import com.jam.ping.user.oauth.OAuth2UserInfo;
+import com.jam.ping.user.main.code.AuthProvider;
+import com.jam.ping.user.main.oauth.OAuth2UserInfo;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 

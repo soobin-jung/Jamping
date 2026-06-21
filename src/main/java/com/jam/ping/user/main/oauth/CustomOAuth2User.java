@@ -1,7 +1,7 @@
-package com.jam.ping.user.oauth;
+package com.jam.ping.user.main.oauth;
 
-import com.jam.ping.user.code.AuthProvider;
-import com.jam.ping.user.code.UserRole;
+import com.jam.ping.user.main.code.AuthProvider;
+import com.jam.ping.user.main.code.UserRole;
 import java.util.Collection;
 import java.util.Map;
 import org.springframework.security.core.GrantedAuthority;

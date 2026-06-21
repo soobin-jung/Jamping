@@ -2,8 +2,8 @@ package com.jam.ping.maker.service;
 
 import com.jam.ping.maker.domain.Maker;
 import com.jam.ping.maker.repository.MakerRepository;
-import com.jam.ping.user.domain.User;
-import com.jam.ping.user.service.UserService;
+import com.jam.ping.user.main.domain.User;
+import com.jam.ping.user.main.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

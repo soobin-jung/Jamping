@@ -1,8 +1,9 @@
 package com.jam.ping.global.config;
 
-import com.jam.ping.user.oauth.CustomOAuth2UserService;
+import com.jam.ping.user.main.oauth.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -35,6 +36,8 @@ public class SecurityConfig {
                         .requestMatchers("/", "/error").permitAll()
                         .requestMatchers("/oauth2/**", "/login/**").permitAll()
                         .requestMatchers("/api/auth/me").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/campsites", "/api/campsites/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/gears/*/reviews").permitAll()
                         .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

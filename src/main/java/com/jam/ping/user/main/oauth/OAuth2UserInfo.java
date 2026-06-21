@@ -1,6 +1,6 @@
-package com.jam.ping.user.oauth;
+package com.jam.ping.user.main.oauth;
 
-import com.jam.ping.user.code.AuthProvider;
+import com.jam.ping.user.main.code.AuthProvider;
 import java.util.Map;
 
 public record OAuth2UserInfo(

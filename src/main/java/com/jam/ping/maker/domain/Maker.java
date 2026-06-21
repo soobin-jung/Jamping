@@ -1,6 +1,6 @@
 package com.jam.ping.maker.domain;
 
-import com.jam.ping.user.domain.User;
+import com.jam.ping.user.main.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

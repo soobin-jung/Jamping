@@ -1,7 +1,7 @@
-package com.jam.ping.user.domain;
+package com.jam.ping.user.main.domain;
 
-import com.jam.ping.user.code.AuthProvider;
-import com.jam.ping.user.code.UserRole;
+import com.jam.ping.user.main.code.AuthProvider;
+import com.jam.ping.user.main.code.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -86,5 +86,12 @@ public class User {
         this.email = email;
         this.nickname = nickname;
         this.profileImageUrl = profileImageUrl;
+    }
+
+    /**
+     * 관리자 화면에서 사용자 권한을 변경합니다.
+     */
+    public void changeRole(UserRole role) {
+        this.role = role;
     }
 }

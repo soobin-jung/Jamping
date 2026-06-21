@@ -1,9 +1,9 @@
-package com.jam.ping.user.oauth;
+package com.jam.ping.user.main.oauth;
 
-import com.jam.ping.user.code.UserRole;
-import com.jam.ping.user.domain.User;
-import com.jam.ping.user.oauth.provider.OAuth2UserInfoExtractor;
-import com.jam.ping.user.repository.UserRepository;
+import com.jam.ping.user.main.code.UserRole;
+import com.jam.ping.user.main.domain.User;
+import com.jam.ping.user.main.oauth.provider.OAuth2UserInfoExtractor;
+import com.jam.ping.user.main.repository.UserRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
