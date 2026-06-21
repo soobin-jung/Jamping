@@ -9,7 +9,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import lombok.AccessLevel;
@@ -21,7 +20,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 @Getter
 @Entity
-@Table(name = "camp_sites")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CampSite {
 

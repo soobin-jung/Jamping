@@ -21,12 +21,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 @Getter
 @Entity
-@Table(
-        name = "users",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_user_provider_provider_user_id", columnNames = {"provider", "provider_user_id"})
-        }
-)
+@Table(uniqueConstraints = {
+        @UniqueConstraint(name = "uk_user_provider_provider_user_id", columnNames = {"provider", "provider_user_id"})
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 

@@ -25,12 +25,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 @Getter
 @Entity
-@Table(
-        name = "reviews",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_review_gear_user", columnNames = {"gear_id", "user_id"})
-        }
-)
+@Table(uniqueConstraints = {
+        @UniqueConstraint(name = "uk_review_gear_user", columnNames = {"gear_id", "user_id"})
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Review {
 

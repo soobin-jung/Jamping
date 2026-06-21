@@ -24,12 +24,9 @@ import org.hibernate.annotations.CreationTimestamp;
 
 @Getter
 @Entity
-@Table(
-        name = "camping_fam_members",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_camping_fam_member_fam_user", columnNames = {"camping_fam_id", "user_id"})
-        }
-)
+@Table(uniqueConstraints = {
+        @UniqueConstraint(name = "uk_camping_fam_member_fam_user", columnNames = {"camping_fam_id", "user_id"})
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CampingFamMember {
 
