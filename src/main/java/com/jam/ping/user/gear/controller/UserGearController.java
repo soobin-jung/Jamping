@@ -1,0 +1,84 @@
+package com.jam.ping.user.gear.controller;
+
+import com.jam.ping.global.response.ApiRes;
+import com.jam.ping.user.gear.controller.request.UserGearRequest;
+import com.jam.ping.user.gear.controller.response.UserGearPageResponse;
+import com.jam.ping.user.gear.controller.response.UserGearResponse;
+import com.jam.ping.user.gear.domain.UserGear;
+import com.jam.ping.user.gear.service.UserGearService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/user-gears")
+public class UserGearController {
+
+    private final UserGearService userGearService;
+
+    @GetMapping
+    public ApiRes<UserGearPageResponse> getUserGears(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return new ApiRes<UserGearPageResponse>()
+                .successData(UserGearPageResponse.from(userGearService.getUserGears(page, size)));
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiRes<UserGearResponse>> createUserGear(@Valid @RequestBody UserGearRequest request) {
+        UserGear userGear = userGearService.createUserGear(
+                request.categoryId(),
+                request.makerId(),
+                request.gearId(),
+                request.name(),
+                request.memo()
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiRes<UserGearResponse>()
+                        .successData(UserGearResponse.from(userGear))
+                        .manipulationOne(userGear.getId())
+                        .responseMsg("장비가 등록되었습니다."));
+    }
+
+    @PutMapping("/{userGearId}")
+    public ApiRes<UserGearResponse> updateUserGear(
+            @PathVariable Long userGearId,
+            @Valid @RequestBody UserGearRequest request
+    ) {
+        UserGear userGear = userGearService.updateUserGear(
+                userGearId,
+                request.categoryId(),
+                request.makerId(),
+                request.gearId(),
+                request.name(),
+                request.memo()
+        );
+
+        return new ApiRes<UserGearResponse>()
+                .successData(UserGearResponse.from(userGear))
+                .manipulationOne(userGear.getId())
+                .responseMsg("장비가 수정되었습니다.");
+    }
+
+    @DeleteMapping("/{userGearId}")
+    public ApiRes<Void> deleteUserGear(@PathVariable Long userGearId) {
+        userGearService.deleteUserGear(userGearId);
+
+        return new ApiRes<Void>()
+                .manipulationOne(userGearId)
+                .responseMsg("장비가 삭제되었습니다.");
+    }
+}
