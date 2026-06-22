@@ -2,18 +2,15 @@ package com.jam.ping.maker.controller;
 
 import com.jam.ping.global.response.ApiRes;
 import com.jam.ping.global.security.AdminOnly;
-import com.jam.ping.global.security.AuthUtils;
 import com.jam.ping.maker.controller.request.MakerRequest;
 import com.jam.ping.maker.controller.response.MakerPageResponse;
 import com.jam.ping.maker.controller.response.MakerResponse;
 import com.jam.ping.maker.domain.Maker;
 import com.jam.ping.maker.service.MakerService;
-import com.jam.ping.user.main.oauth.CustomOAuth2User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,14 +50,12 @@ public class MakerAdminController {
 
     @PostMapping
     public ResponseEntity<ApiRes<MakerResponse>> createMaker(
-            @Valid @RequestBody MakerRequest request,
-            @AuthenticationPrincipal CustomOAuth2User oauth2User
+            @Valid @RequestBody MakerRequest request
     ) {
         Maker maker = makerService.createMaker(
                 request.name(),
                 request.nameEng(),
-                request.homepageUrl(),
-                AuthUtils.getActorUserId(oauth2User)
+                request.homepageUrl()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -73,15 +68,13 @@ public class MakerAdminController {
     @PutMapping("/{makerId}")
     public ApiRes<MakerResponse> updateMaker(
             @PathVariable Long makerId,
-            @Valid @RequestBody MakerRequest request,
-            @AuthenticationPrincipal CustomOAuth2User oauth2User
+            @Valid @RequestBody MakerRequest request
     ) {
         Maker maker = makerService.updateMaker(
                 makerId,
                 request.name(),
                 request.nameEng(),
-                request.homepageUrl(),
-                AuthUtils.getActorUserId(oauth2User)
+                request.homepageUrl()
         );
 
         return new ApiRes<MakerResponse>()

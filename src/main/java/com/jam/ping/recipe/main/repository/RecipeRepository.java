@@ -9,19 +9,19 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
-    @EntityGraph(attributePaths = {"recipeCategory", "createdBy", "updatedBy"})
+    @EntityGraph(attributePaths = {"recipeCategory"})
     Page<Recipe> findAll(Pageable pageable);
 
-    @EntityGraph(attributePaths = {"recipeCategory", "createdBy", "updatedBy"})
+    @EntityGraph(attributePaths = {"recipeCategory"})
     Page<Recipe> findByRecipeCategoryId(Long recipeCategoryId, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"recipeCategory", "createdBy", "updatedBy"})
+    @EntityGraph(attributePaths = {"recipeCategory"})
     Page<Recipe> findByNameContainingIgnoreCase(String keyword, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"recipeCategory", "createdBy", "updatedBy"})
+    @EntityGraph(attributePaths = {"recipeCategory"})
     Page<Recipe> findByRecipeCategoryIdAndNameContainingIgnoreCase(Long recipeCategoryId, String keyword, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"recipeCategory", "createdBy", "updatedBy"})
+    @EntityGraph(attributePaths = {"recipeCategory"})
     Optional<Recipe> findWithDetailsById(Long id);
 
     boolean existsByRecipeCategoryIdAndNameIgnoreCase(Long recipeCategoryId, String name);

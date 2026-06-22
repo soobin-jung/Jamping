@@ -2,8 +2,6 @@ package com.jam.ping.recipe.category.service;
 
 import com.jam.ping.recipe.category.domain.RecipeCategory;
 import com.jam.ping.recipe.category.repository.RecipeCategoryRepository;
-import com.jam.ping.user.main.domain.User;
-import com.jam.ping.user.main.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +18,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class RecipeCategoryService {
 
     private final RecipeCategoryRepository recipeCategoryRepository;
-    private final UserService userService;
 
     public Page<RecipeCategory> getRecipeCategories(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(
@@ -43,26 +40,21 @@ public class RecipeCategoryService {
     }
 
     @Transactional
-    public RecipeCategory createRecipeCategory(String name, Long actorUserId) {
+    public RecipeCategory createRecipeCategory(String name) {
         validateDuplicateName(name, null);
-        User actorUser = userService.getActorUser(actorUserId);
 
         RecipeCategory recipeCategory = RecipeCategory.builder()
                 .name(name)
-                .createdBy(actorUser)
-                .updatedBy(actorUser)
                 .build();
 
         return recipeCategoryRepository.save(recipeCategory);
     }
 
     @Transactional
-    public RecipeCategory updateRecipeCategory(Long id, String name, Long actorUserId) {
+    public RecipeCategory updateRecipeCategory(Long id, String name) {
         validateDuplicateName(name, id);
         RecipeCategory recipeCategory = findRecipeCategory(id);
-        User actorUser = userService.getActorUser(actorUserId);
-
-        recipeCategory.update(name, actorUser);
+        recipeCategory.update(name);
         return recipeCategory;
     }
 
@@ -73,7 +65,7 @@ public class RecipeCategoryService {
     }
 
     private RecipeCategory findRecipeCategory(Long id) {
-        return recipeCategoryRepository.findWithUsersById(id)
+        return recipeCategoryRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "레시피 카테고리를 찾을 수 없습니다."));
     }
 

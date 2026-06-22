@@ -4,8 +4,6 @@ import com.jam.ping.recipe.category.domain.RecipeCategory;
 import com.jam.ping.recipe.category.repository.RecipeCategoryRepository;
 import com.jam.ping.recipe.main.domain.Recipe;
 import com.jam.ping.recipe.main.repository.RecipeRepository;
-import com.jam.ping.user.main.domain.User;
-import com.jam.ping.user.main.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +21,6 @@ public class RecipeService {
 
     private final RecipeRepository recipeRepository;
     private final RecipeCategoryRepository recipeCategoryRepository;
-    private final UserService userService;
 
     public Page<Recipe> getRecipes(Long recipeCategoryId, String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(
@@ -53,31 +50,27 @@ public class RecipeService {
     }
 
     @Transactional
-    public Recipe createRecipe(String name, String ingredients, String instructions, Long recipeCategoryId, Long actorUserId) {
+    public Recipe createRecipe(String name, String ingredients, String instructions, Long recipeCategoryId) {
         RecipeCategory recipeCategory = findRecipeCategory(recipeCategoryId);
         validateDuplicate(recipeCategory.getId(), name, null);
-        User actorUser = userService.getActorUser(actorUserId);
 
         Recipe recipe = Recipe.builder()
                 .name(name)
                 .ingredients(ingredients)
                 .instructions(instructions)
                 .recipeCategory(recipeCategory)
-                .createdBy(actorUser)
-                .updatedBy(actorUser)
                 .build();
 
         return recipeRepository.save(recipe);
     }
 
     @Transactional
-    public Recipe updateRecipe(Long id, String name, String ingredients, String instructions, Long recipeCategoryId, Long actorUserId) {
+    public Recipe updateRecipe(Long id, String name, String ingredients, String instructions, Long recipeCategoryId) {
         Recipe recipe = findRecipe(id);
         RecipeCategory recipeCategory = findRecipeCategory(recipeCategoryId);
         validateDuplicate(recipeCategory.getId(), name, id);
-        User actorUser = userService.getActorUser(actorUserId);
 
-        recipe.update(name, ingredients, instructions, recipeCategory, actorUser);
+        recipe.update(name, ingredients, instructions, recipeCategory);
         return recipe;
     }
 

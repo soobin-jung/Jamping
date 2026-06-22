@@ -2,8 +2,6 @@ package com.jam.ping.category.service;
 
 import com.jam.ping.category.domain.Category;
 import com.jam.ping.category.repository.CategoryRepository;
-import com.jam.ping.user.main.domain.User;
-import com.jam.ping.user.main.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +18,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final UserService userService;
 
     /**
      * 관리자 화면에서 사용하는 카테고리 목록을 검색 조건과 페이지 범위로 조회합니다.
@@ -52,15 +49,11 @@ public class CategoryService {
      * 새로운 카테고리를 생성합니다.
      */
     @Transactional
-    public Category createCategory(String name, String memo, Long actorUserId) {
+    public Category createCategory(String name, String memo) {
         validateDuplicateName(name, null);
-
-        User actorUser = userService.getActorUser(actorUserId);
 
         Category category = Category.builder()
                 .name(name)
-                .createdBy(actorUser)
-                .updatedBy(actorUser)
                 .memo(memo)
                 .build();
 
@@ -71,13 +64,11 @@ public class CategoryService {
      * 기존 카테고리 정보를 수정합니다.
      */
     @Transactional
-    public Category updateCategory(Long categoryId, String name, String memo, Long actorUserId) {
+    public Category updateCategory(Long categoryId, String name, String memo) {
         validateDuplicateName(name, categoryId);
 
         Category category = findCategory(categoryId);
-        User actorUser = userService.getActorUser(actorUserId);
-
-        category.update(name, actorUser, memo);
+        category.update(name, memo);
         return category;
     }
 
@@ -94,7 +85,7 @@ public class CategoryService {
      * 공통 조회 메서드로 카테고리를 찾고, 없으면 404 예외를 발생시킵니다.
      */
     private Category findCategory(Long categoryId) {
-        return categoryRepository.findWithUsersById(categoryId)
+        return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다."));
     }
 

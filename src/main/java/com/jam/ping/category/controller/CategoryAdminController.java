@@ -7,13 +7,10 @@ import com.jam.ping.category.domain.Category;
 import com.jam.ping.category.service.CategoryService;
 import com.jam.ping.global.response.ApiRes;
 import com.jam.ping.global.security.AdminOnly;
-import com.jam.ping.global.security.AuthUtils;
-import com.jam.ping.user.main.oauth.CustomOAuth2User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,13 +50,11 @@ public class CategoryAdminController {
 
     @PostMapping
     public ResponseEntity<ApiRes<CategoryResponse>> createCategory(
-            @Valid @RequestBody CategoryRequest request,
-            @AuthenticationPrincipal CustomOAuth2User oauth2User
+            @Valid @RequestBody CategoryRequest request
     ) {
         Category category = categoryService.createCategory(
                 request.name(),
-                request.memo(),
-                AuthUtils.getActorUserId(oauth2User)
+                request.memo()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -72,14 +67,12 @@ public class CategoryAdminController {
     @PutMapping("/{categoryId}")
     public ApiRes<CategoryResponse> updateCategory(
             @PathVariable Long categoryId,
-            @Valid @RequestBody CategoryRequest request,
-            @AuthenticationPrincipal CustomOAuth2User oauth2User
+            @Valid @RequestBody CategoryRequest request
     ) {
         Category category = categoryService.updateCategory(
                 categoryId,
                 request.name(),
-                request.memo(),
-                AuthUtils.getActorUserId(oauth2User)
+                request.memo()
         );
 
         return new ApiRes<CategoryResponse>()

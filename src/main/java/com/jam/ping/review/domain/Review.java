@@ -1,6 +1,7 @@
 package com.jam.ping.review.domain;
 
 import com.jam.ping.gear.domain.Gear;
+import com.jam.ping.global.domain.CommonEntity;
 import com.jam.ping.review.code.ReviewStatus;
 import com.jam.ping.user.main.domain.User;
 import jakarta.persistence.Column;
@@ -20,27 +21,23 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 @Getter
 @Entity
 @Table(uniqueConstraints = {
-        @UniqueConstraint(name = "uk_review_gear_user", columnNames = {"gear_id", "user_id"})
+    @UniqueConstraint(name = "uk_review_gear_user", columnNames = {"gear_id", "user_id"})
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Review {
+public class Review extends CommonEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "gear_id", nullable = false)
     private Gear gear;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Column(nullable = false)
@@ -61,14 +58,6 @@ public class Review {
     private User moderatedBy;
 
     private LocalDateTime moderatedAt;
-
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
 
     @Builder
     private Review(

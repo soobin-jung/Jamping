@@ -2,18 +2,15 @@ package com.jam.ping.recipe.category.controller;
 
 import com.jam.ping.global.response.ApiRes;
 import com.jam.ping.global.security.AdminOnly;
-import com.jam.ping.global.security.AuthUtils;
 import com.jam.ping.recipe.category.controller.request.RecipeCategoryRequest;
 import com.jam.ping.recipe.category.controller.response.RecipeCategoryPageResponse;
 import com.jam.ping.recipe.category.controller.response.RecipeCategoryResponse;
 import com.jam.ping.recipe.category.domain.RecipeCategory;
 import com.jam.ping.recipe.category.service.RecipeCategoryService;
-import com.jam.ping.user.main.oauth.CustomOAuth2User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,12 +50,10 @@ public class RecipeCategoryAdminController {
 
     @PostMapping
     public ResponseEntity<ApiRes<RecipeCategoryResponse>> createRecipeCategory(
-            @Valid @RequestBody RecipeCategoryRequest request,
-            @AuthenticationPrincipal CustomOAuth2User oauth2User
+            @Valid @RequestBody RecipeCategoryRequest request
     ) {
         RecipeCategory recipeCategory = recipeCategoryService.createRecipeCategory(
-                request.name(),
-                AuthUtils.getActorUserId(oauth2User)
+                request.name()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -71,13 +66,11 @@ public class RecipeCategoryAdminController {
     @PutMapping("/{id}")
     public ApiRes<RecipeCategoryResponse> updateRecipeCategory(
             @PathVariable Long id,
-            @Valid @RequestBody RecipeCategoryRequest request,
-            @AuthenticationPrincipal CustomOAuth2User oauth2User
+            @Valid @RequestBody RecipeCategoryRequest request
     ) {
         RecipeCategory recipeCategory = recipeCategoryService.updateRecipeCategory(
                 id,
-                request.name(),
-                AuthUtils.getActorUserId(oauth2User)
+                request.name()
         );
 
         return new ApiRes<RecipeCategoryResponse>()

@@ -2,18 +2,15 @@ package com.jam.ping.recipe.main.controller;
 
 import com.jam.ping.global.response.ApiRes;
 import com.jam.ping.global.security.AdminOnly;
-import com.jam.ping.global.security.AuthUtils;
 import com.jam.ping.recipe.main.controller.request.RecipeRequest;
 import com.jam.ping.recipe.main.controller.response.RecipePageResponse;
 import com.jam.ping.recipe.main.controller.response.RecipeResponse;
 import com.jam.ping.recipe.main.domain.Recipe;
 import com.jam.ping.recipe.main.service.RecipeService;
-import com.jam.ping.user.main.oauth.CustomOAuth2User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,15 +52,13 @@ public class RecipeAdminController {
 
     @PostMapping
     public ResponseEntity<ApiRes<RecipeResponse>> createRecipe(
-            @Valid @RequestBody RecipeRequest request,
-            @AuthenticationPrincipal CustomOAuth2User oauth2User
+            @Valid @RequestBody RecipeRequest request
     ) {
         Recipe recipe = recipeService.createRecipe(
                 request.name(),
                 request.ingredients(),
                 request.instructions(),
-                request.recipeCategoryId(),
-                AuthUtils.getActorUserId(oauth2User)
+                request.recipeCategoryId()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -76,16 +71,14 @@ public class RecipeAdminController {
     @PutMapping("/{id}")
     public ApiRes<RecipeResponse> updateRecipe(
             @PathVariable Long id,
-            @Valid @RequestBody RecipeRequest request,
-            @AuthenticationPrincipal CustomOAuth2User oauth2User
+            @Valid @RequestBody RecipeRequest request
     ) {
         Recipe recipe = recipeService.updateRecipe(
                 id,
                 request.name(),
                 request.ingredients(),
                 request.instructions(),
-                request.recipeCategoryId(),
-                AuthUtils.getActorUserId(oauth2User)
+                request.recipeCategoryId()
         );
 
         return new ApiRes<RecipeResponse>()

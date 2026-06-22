@@ -2,8 +2,6 @@ package com.jam.ping.maker.service;
 
 import com.jam.ping.maker.domain.Maker;
 import com.jam.ping.maker.repository.MakerRepository;
-import com.jam.ping.user.main.domain.User;
-import com.jam.ping.user.main.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +18,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class MakerService {
 
     private final MakerRepository makerRepository;
-    private final UserService userService;
 
     /**
      * 관리자 화면에서 사용하는 메이커 목록을 검색 조건과 페이지 범위로 조회합니다.
@@ -56,17 +53,13 @@ public class MakerService {
      * 새로운 메이커를 생성합니다.
      */
     @Transactional
-    public Maker createMaker(String name, String nameEng, String homepageUrl, Long actorUserId) {
+    public Maker createMaker(String name, String nameEng, String homepageUrl) {
         validateDuplicate(name, nameEng, null);
-
-        User actorUser = userService.getActorUser(actorUserId);
 
         Maker maker = Maker.builder()
                 .name(name)
                 .nameEng(nameEng)
                 .homepageUrl(homepageUrl)
-                .createdBy(actorUser)
-                .updatedBy(actorUser)
                 .build();
 
         return makerRepository.save(maker);
@@ -76,13 +69,11 @@ public class MakerService {
      * 기존 메이커 정보를 수정합니다.
      */
     @Transactional
-    public Maker updateMaker(Long makerId, String name, String nameEng, String homepageUrl, Long actorUserId) {
+    public Maker updateMaker(Long makerId, String name, String nameEng, String homepageUrl) {
         validateDuplicate(name, nameEng, makerId);
 
         Maker maker = findMaker(makerId);
-        User actorUser = userService.getActorUser(actorUserId);
-
-        maker.update(name, nameEng, homepageUrl, actorUser);
+        maker.update(name, nameEng, homepageUrl);
         return maker;
     }
 
@@ -99,9 +90,10 @@ public class MakerService {
      * 공통 조회 메서드로 메이커를 찾고, 없으면 404 예외를 발생시킵니다.
      */
     private Maker findMaker(Long makerId) {
-        return makerRepository.findWithUsersById(makerId)
+        return makerRepository.findById(makerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "메이커를 찾을 수 없습니다."));
     }
+
     private void validateDuplicate(String name, String nameEng, Long makerId) {
         String normalizedName = name == null ? "" : name.trim();
         String normalizedNameEng = nameEng == null ? "" : nameEng.trim();

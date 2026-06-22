@@ -7,13 +7,10 @@ import com.jam.ping.gear.domain.Gear;
 import com.jam.ping.gear.service.GearService;
 import com.jam.ping.global.response.ApiRes;
 import com.jam.ping.global.security.AdminOnly;
-import com.jam.ping.global.security.AuthUtils;
-import com.jam.ping.user.main.oauth.CustomOAuth2User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,8 +54,7 @@ public class GearAdminController {
 
     @PostMapping
     public ResponseEntity<ApiRes<GearResponse>> createGear(
-            @Valid @RequestBody GearRequest request,
-            @AuthenticationPrincipal CustomOAuth2User oauth2User
+            @Valid @RequestBody GearRequest request
     ) {
         Gear gear = gearService.createGear(
                 request.name(),
@@ -66,8 +62,7 @@ public class GearAdminController {
                 request.imageUrl(),
                 request.categoryId(),
                 request.makerId(),
-                request.memo(),
-                AuthUtils.getActorUserId(oauth2User)
+                request.memo()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -80,8 +75,7 @@ public class GearAdminController {
     @PutMapping("/{gearId}")
     public ApiRes<GearResponse> updateGear(
             @PathVariable Long gearId,
-            @Valid @RequestBody GearRequest request,
-            @AuthenticationPrincipal CustomOAuth2User oauth2User
+            @Valid @RequestBody GearRequest request
     ) {
         Gear gear = gearService.updateGear(
                 gearId,
@@ -90,8 +84,7 @@ public class GearAdminController {
                 request.imageUrl(),
                 request.categoryId(),
                 request.makerId(),
-                request.memo(),
-                AuthUtils.getActorUserId(oauth2User)
+                request.memo()
         );
 
         return new ApiRes<GearResponse>()

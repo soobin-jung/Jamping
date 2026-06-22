@@ -2,6 +2,7 @@ package com.jam.ping.user.gear.domain;
 
 import com.jam.ping.category.domain.Category;
 import com.jam.ping.gear.domain.Gear;
+import com.jam.ping.global.domain.CommonEntity;
 import com.jam.ping.maker.domain.Maker;
 import com.jam.ping.user.main.domain.User;
 import jakarta.persistence.Column;
@@ -12,18 +13,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserGear {
+public class UserGear extends CommonEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,14 +48,6 @@ public class UserGear {
 
     @Column(length = 1000)
     private String memo;
-
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
 
     @Builder
     private UserGear(User user, Category category, Maker maker, Gear gear, String name, String memo) {

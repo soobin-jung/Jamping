@@ -6,8 +6,6 @@ import com.jam.ping.gear.domain.Gear;
 import com.jam.ping.gear.repository.GearRepository;
 import com.jam.ping.maker.domain.Maker;
 import com.jam.ping.maker.repository.MakerRepository;
-import com.jam.ping.user.main.domain.User;
-import com.jam.ping.user.main.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +24,6 @@ public class GearService {
     private final GearRepository gearRepository;
     private final CategoryRepository categoryRepository;
     private final MakerRepository makerRepository;
-    private final UserService userService;
 
     /**
      * 관리자 화면에서 사용하는 용품 목록을 카테고리, 메이커, 검색어, 페이지 조건으로 조회합니다.
@@ -93,13 +90,11 @@ public class GearService {
             String imageUrl,
             Long categoryId,
             Long makerId,
-            String memo,
-            Long actorUserId
+            String memo
     ) {
         Category category = findCategory(categoryId);
         Maker maker = findMaker(makerId);
         validateDuplicate(category.getId(), maker.getId(), name, null);
-        User actorUser = userService.getActorUser(actorUserId);
 
         Gear gear = Gear.builder()
                 .name(name)
@@ -107,8 +102,6 @@ public class GearService {
                 .imageUrl(imageUrl)
                 .category(category)
                 .maker(maker)
-                .createdBy(actorUser)
-                .updatedBy(actorUser)
                 .memo(memo)
                 .build();
 
@@ -126,16 +119,14 @@ public class GearService {
             String imageUrl,
             Long categoryId,
             Long makerId,
-            String memo,
-            Long actorUserId
+            String memo
     ) {
         Gear gear = findGear(gearId);
         Category category = findCategory(categoryId);
         Maker maker = findMaker(makerId);
         validateDuplicate(category.getId(), maker.getId(), name, gearId);
-        User actorUser = userService.getActorUser(actorUserId);
 
-        gear.update(name, link, imageUrl, category, maker, actorUser, memo);
+        gear.update(name, link, imageUrl, category, maker, memo);
         return gear;
     }
 
@@ -179,6 +170,7 @@ public class GearService {
         return makerRepository.findById(makerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "메이커를 찾을 수 없습니다."));
     }
+
     private void validateDuplicate(Long categoryId, Long makerId, String name, Long gearId) {
         String normalizedName = name == null ? "" : name.trim();
 
