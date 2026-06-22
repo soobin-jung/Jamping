@@ -2,7 +2,7 @@ package com.jam.ping.auth.api;
 
 import com.jam.ping.auth.api.response.AuthMeResponse;
 import com.jam.ping.global.response.ApiRes;
-import com.jam.ping.user.main.oauth.CustomOAuth2User;
+import com.jam.ping.api.user.main.oauth.CustomOAuth2User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;

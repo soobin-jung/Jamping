@@ -1,6 +1,6 @@
 package com.jam.ping.auth.api.response;
 
-import com.jam.ping.user.main.oauth.CustomOAuth2User;
+import com.jam.ping.api.user.main.oauth.CustomOAuth2User;
 
 public record AuthMeResponse(
         Long userId,

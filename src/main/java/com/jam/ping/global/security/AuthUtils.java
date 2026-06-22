@@ -1,6 +1,6 @@
 package com.jam.ping.global.security;
 
-import com.jam.ping.user.main.oauth.CustomOAuth2User;
+import com.jam.ping.api.user.main.oauth.CustomOAuth2User;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

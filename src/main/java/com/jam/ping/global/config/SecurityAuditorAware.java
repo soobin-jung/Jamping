@@ -1,6 +1,6 @@
 package com.jam.ping.global.config;
 
-import com.jam.ping.user.main.oauth.CustomOAuth2User;
+import com.jam.ping.api.user.main.oauth.CustomOAuth2User;
 import java.util.Optional;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;

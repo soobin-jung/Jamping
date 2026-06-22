@@ -1,6 +1,6 @@
 package com.jam.ping.global.config;
 
-import com.jam.ping.user.main.oauth.CustomOAuth2UserService;
+import com.jam.ping.api.user.main.oauth.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
