@@ -3,7 +3,7 @@ package com.jam.ping.review.controller;
 import com.jam.ping.global.response.ApiRes;
 import com.jam.ping.global.security.AdminOnly;
 import com.jam.ping.global.security.AuthUtils;
-import com.jam.ping.review.code.ReviewStatus;
+import com.jam.ping.review.controller.request.AdminReviewSearchRequest;
 import com.jam.ping.review.controller.request.ReviewModerationRequest;
 import com.jam.ping.review.controller.response.AdminReviewPageResponse;
 import com.jam.ping.review.controller.response.AdminReviewResponse;
@@ -14,11 +14,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -32,15 +32,11 @@ public class ReviewAdminController {
     @GetMapping
     public ApiRes<AdminReviewPageResponse> getReviews(
             @PathVariable Long gearId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt") String sort,
-            @RequestParam(defaultValue = "desc") String direction,
-            @RequestParam(required = false) ReviewStatus status
+            @Valid @ModelAttribute AdminReviewSearchRequest request
     ) {
         return new ApiRes<AdminReviewPageResponse>()
                 .successData(AdminReviewPageResponse.from(
-                        reviewService.getAllReviewsForAdmin(gearId, page, size, sort, direction, status)
+                        reviewService.getAllReviewsForAdmin(gearId, request.page(), request.size(), request.sort(), request.direction(), request.status())
                 ));
     }
 

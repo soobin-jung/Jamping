@@ -1,5 +1,6 @@
 package com.jam.ping.maker.controller;
 
+import com.jam.ping.global.request.KeywordPageRequest;
 import com.jam.ping.global.response.ApiRes;
 import com.jam.ping.global.security.AdminOnly;
 import com.jam.ping.maker.controller.request.MakerRequest;
@@ -13,12 +14,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -30,15 +31,11 @@ public class MakerAdminController {
     private final MakerService makerService;
 
     @GetMapping
-    public ApiRes<MakerPageResponse> getMakers(
-            @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
+    public ApiRes<MakerPageResponse> getMakers(@Valid @ModelAttribute KeywordPageRequest request) {
         return new ApiRes<MakerPageResponse>()
                 .successData(MakerPageResponse.from(
-                        makerService.getMakers(keyword, page, size),
-                        keyword == null ? "" : keyword.trim()
+                        makerService.getMakers(request.keyword(), request.page(), request.size()),
+                        request.keyword().trim()
                 ));
     }
 

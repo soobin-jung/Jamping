@@ -2,8 +2,8 @@ package com.jam.ping.user.main.controller;
 
 import com.jam.ping.global.response.ApiRes;
 import com.jam.ping.global.security.AdminOnly;
-import com.jam.ping.user.main.code.UserRole;
 import com.jam.ping.user.main.controller.request.UserRoleUpdateRequest;
+import com.jam.ping.user.main.controller.request.UserSearchRequest;
 import com.jam.ping.user.main.controller.response.UserPageResponse;
 import com.jam.ping.user.main.controller.response.UserResponse;
 import com.jam.ping.user.main.domain.User;
@@ -11,11 +11,11 @@ import com.jam.ping.user.main.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,17 +27,12 @@ public class UserAdminController {
     private final UserService userService;
 
     @GetMapping
-    public ApiRes<UserPageResponse> getUsers(
-            @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(required = false) UserRole role,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
+    public ApiRes<UserPageResponse> getUsers(@Valid @ModelAttribute UserSearchRequest request) {
         return new ApiRes<UserPageResponse>()
                 .successData(UserPageResponse.from(
-                        userService.getUsers(keyword, role, page, size),
-                        keyword == null ? "" : keyword.trim(),
-                        role
+                        userService.getUsers(request.keyword(), request.role(), request.page(), request.size()),
+                        request.keyword().trim(),
+                        request.role()
                 ));
     }
 

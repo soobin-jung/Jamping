@@ -1,6 +1,7 @@
 package com.jam.ping.gear.controller;
 
 import com.jam.ping.gear.controller.request.GearRequest;
+import com.jam.ping.gear.controller.request.GearSearchRequest;
 import com.jam.ping.gear.controller.response.GearPageResponse;
 import com.jam.ping.gear.controller.response.GearResponse;
 import com.jam.ping.gear.domain.Gear;
@@ -13,12 +14,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -30,19 +31,13 @@ public class GearAdminController {
     private final GearService gearService;
 
     @GetMapping
-    public ApiRes<GearPageResponse> getGears(
-            @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) Long makerId,
-            @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
+    public ApiRes<GearPageResponse> getGears(@Valid @ModelAttribute GearSearchRequest request) {
         return new ApiRes<GearPageResponse>()
                 .successData(GearPageResponse.from(
-                        gearService.getGears(categoryId, makerId, keyword, page, size),
-                        categoryId,
-                        makerId,
-                        keyword == null ? "" : keyword.trim()
+                        gearService.getGears(request.categoryId(), request.makerId(), request.keyword(), request.page(), request.size()),
+                        request.categoryId(),
+                        request.makerId(),
+                        request.keyword().trim()
                 ));
     }
 

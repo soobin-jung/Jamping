@@ -5,6 +5,7 @@ import com.jam.ping.category.controller.response.CategoryPageResponse;
 import com.jam.ping.category.controller.response.CategoryResponse;
 import com.jam.ping.category.domain.Category;
 import com.jam.ping.category.service.CategoryService;
+import com.jam.ping.global.request.KeywordPageRequest;
 import com.jam.ping.global.response.ApiRes;
 import com.jam.ping.global.security.AdminOnly;
 import jakarta.validation.Valid;
@@ -13,12 +14,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -30,15 +31,11 @@ public class CategoryAdminController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public ApiRes<CategoryPageResponse> getCategories(
-            @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
+    public ApiRes<CategoryPageResponse> getCategories(@Valid @ModelAttribute KeywordPageRequest request) {
         return new ApiRes<CategoryPageResponse>()
                 .successData(CategoryPageResponse.from(
-                        categoryService.getCategories(keyword, page, size),
-                        keyword == null ? "" : keyword.trim()
+                        categoryService.getCategories(request.keyword(), request.page(), request.size()),
+                        request.keyword().trim()
                 ));
     }
 

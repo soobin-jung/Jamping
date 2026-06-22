@@ -1,5 +1,6 @@
 package com.jam.ping.review.controller;
 
+import com.jam.ping.global.request.PageRequest;
 import com.jam.ping.global.response.ApiRes;
 import com.jam.ping.global.security.AuthUtils;
 import com.jam.ping.review.controller.request.ReviewRequest;
@@ -15,12 +16,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -33,13 +34,12 @@ public class ReviewController {
     @GetMapping
     public ApiRes<ReviewPageResponse> getReviews(
             @PathVariable Long gearId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @Valid @ModelAttribute PageRequest request,
             @AuthenticationPrincipal CustomOAuth2User oauth2User
     ) {
         return new ApiRes<ReviewPageResponse>()
                 .successData(ReviewPageResponse.from(
-                        reviewService.getActiveReviews(gearId, page, size),
+                        reviewService.getActiveReviews(gearId, request.page(), request.size()),
                         AuthUtils.getActorUserId(oauth2User)
                 ));
     }
