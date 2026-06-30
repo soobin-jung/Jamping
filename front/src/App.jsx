@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { PublicHome } from "./components/PublicHome";
+import { TestPage } from "./components/TestPage";
 import { AdminLayout } from "./components/admin/AdminLayout";
 import { AdminDashboard } from "./components/admin/AdminDashboard";
 import { CategoryManagement } from "./components/admin/CategoryManagement";
@@ -224,6 +225,10 @@ function App() {
     }
 
     return <AdminDashboard nickname={me?.nickname ?? ""} role={me?.role ?? ""} />;
+  }
+
+  if (pathname === "/test") {
+    return <TestPage me={me} loading={loading} />;
   }
 
   if (isAdminPage) {

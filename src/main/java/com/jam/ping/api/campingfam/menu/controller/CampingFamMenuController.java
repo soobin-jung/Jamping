@@ -37,14 +37,7 @@ public class CampingFamMenuController {
             @PathVariable Long menuId,
             @Valid @RequestBody CampingFamMenuUpdateRequest request
     ) {
-        CampingFamMenu menu = campingFamMenuService.updateMenu(
-                campingFamId,
-                menuId,
-                request.breakfast(),
-                request.lunch(),
-                request.dinner(),
-                request.snack()
-        );
+        CampingFamMenu menu = campingFamMenuService.updateMenu(campingFamId, menuId, request.menu());
         return new ApiRes<CampingFamMenuResponse>()
                 .successData(CampingFamMenuResponse.from(menu))
                 .manipulationOne(menu.getId())

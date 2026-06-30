@@ -12,9 +12,9 @@ public record GearResponse(
         String categoryName,
         Long makerId,
         String makerName,
-        String createdBy,
+        Long createdById,
         LocalDateTime createdAt,
-        String updatedBy,
+        Long updatedById,
         LocalDateTime updatedAt,
         String memo
 ) {
@@ -32,9 +32,9 @@ public record GearResponse(
                 gear.getCategory().getName(),
                 gear.getMaker().getId(),
                 gear.getMaker().getName(),
-                gear.getCreatedBy() == null ? null : gear.getCreatedBy().getNickname(),
+                gear.getCreatedById(),
                 gear.getCreatedAt(),
-                gear.getUpdatedBy() == null ? null : gear.getUpdatedBy().getNickname(),
+                gear.getUpdatedById(),
                 gear.getUpdatedAt(),
                 gear.getMemo()
         );

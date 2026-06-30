@@ -1,6 +1,7 @@
 package com.jam.ping.api.campingfam.menu.domain;
 
 import com.jam.ping.api.campingfam.main.domain.CampingFam;
+import com.jam.ping.api.campingfam.menu.code.MealType;
 import com.jam.ping.global.domain.CommonEntity;
 import jakarta.persistence.*;
 
@@ -25,28 +26,22 @@ public class CampingFamMenu extends CommonEntity {
     @Column(nullable = false)
     private LocalDate campingDate;
 
-    @Column(length = 200)
-    private String breakfast;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private MealType mealType;
 
     @Column(length = 200)
-    private String lunch;
-
-    @Column(length = 200)
-    private String dinner;
-
-    @Column(length = 200)
-    private String snack;
+    private String menu;
 
     @Builder
-    private CampingFamMenu(CampingFam campingFam, LocalDate campingDate) {
+    private CampingFamMenu(CampingFam campingFam, LocalDate campingDate, MealType mealType) {
         this.campingFam = campingFam;
         this.campingDate = campingDate;
+        this.mealType = mealType;
     }
 
-    public void update(String breakfast, String lunch, String dinner, String snack) {
-        this.breakfast = breakfast;
-        this.lunch = lunch;
-        this.dinner = dinner;
-        this.snack = snack;
+    public void update(String menu) {
+        this.menu = menu;
     }
 }
+

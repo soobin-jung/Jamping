@@ -28,8 +28,10 @@ public class CampingFam extends CommonEntity {
     @Column(nullable = false, length = 255)
     private String reservationSites;
 
+    @Column(nullable = true)
     private LocalDate campingStartDate;
 
+    @Column(nullable = true)
     private LocalDate campingEndDate;
 
     @Builder

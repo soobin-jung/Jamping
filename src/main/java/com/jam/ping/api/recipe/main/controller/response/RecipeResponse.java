@@ -10,9 +10,9 @@ public record RecipeResponse(
         String instructions,
         Long recipeCategoryId,
         String recipeCategoryName,
-        String createdBy,
+        Long createdById,
         LocalDateTime createdAt,
-        String updatedBy,
+        Long updatedById,
         LocalDateTime updatedAt
 ) {
 
@@ -24,9 +24,9 @@ public record RecipeResponse(
                 recipe.getInstructions(),
                 recipe.getRecipeCategory().getId(),
                 recipe.getRecipeCategory().getName(),
-                recipe.getCreatedBy() == null ? null : recipe.getCreatedBy().getNickname(),
+                recipe.getCreatedById(),
                 recipe.getCreatedAt(),
-                recipe.getUpdatedBy() == null ? null : recipe.getUpdatedBy().getNickname(),
+                recipe.getUpdatedById(),
                 recipe.getUpdatedAt()
         );
     }

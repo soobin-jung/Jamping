@@ -8,8 +8,8 @@ public record CategoryResponse(
         String name,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        String createdBy,
-        String updatedBy,
+        Long createdById,
+        Long updatedById,
         String memo
 ) {
 
@@ -22,8 +22,8 @@ public record CategoryResponse(
                 category.getName(),
                 category.getCreatedAt(),
                 category.getUpdatedAt(),
-                category.getCreatedBy() == null ? null : category.getCreatedBy().getNickname(),
-                category.getUpdatedBy() == null ? null : category.getUpdatedBy().getNickname(),
+                category.getCreatedById(),
+                category.getUpdatedById(),
                 category.getMemo()
         );
     }

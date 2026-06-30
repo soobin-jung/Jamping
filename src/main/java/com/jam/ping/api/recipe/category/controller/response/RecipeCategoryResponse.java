@@ -8,8 +8,8 @@ public record RecipeCategoryResponse(
         String name,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        String createdBy,
-        String updatedBy
+        Long createdById,
+        Long updatedById
 ) {
 
     public static RecipeCategoryResponse from(RecipeCategory recipeCategory) {
@@ -18,8 +18,8 @@ public record RecipeCategoryResponse(
                 recipeCategory.getName(),
                 recipeCategory.getCreatedAt(),
                 recipeCategory.getUpdatedAt(),
-                recipeCategory.getCreatedBy() == null ? null : recipeCategory.getCreatedBy().getNickname(),
-                recipeCategory.getUpdatedBy() == null ? null : recipeCategory.getUpdatedBy().getNickname()
+                recipeCategory.getCreatedById(),
+                recipeCategory.getUpdatedById()
         );
     }
 }

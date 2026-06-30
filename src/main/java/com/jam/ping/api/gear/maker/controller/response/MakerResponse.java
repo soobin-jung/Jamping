@@ -9,8 +9,8 @@ public record MakerResponse(
         String nameEng,
         String homepageUrl,
         LocalDateTime createdAt,
-        String createdBy,
-        String updatedBy,
+        Long createdById,
+        Long updatedById,
         LocalDateTime updatedAt
 ) {
 
@@ -24,8 +24,8 @@ public record MakerResponse(
                 maker.getNameEng(),
                 maker.getHomepageUrl(),
                 maker.getCreatedAt(),
-                maker.getCreatedBy() == null ? null : maker.getCreatedBy().getNickname(),
-                maker.getUpdatedBy() == null ? null : maker.getUpdatedBy().getNickname(),
+                maker.getCreatedById(),
+                maker.getUpdatedById(),
                 maker.getUpdatedAt()
         );
     }
