@@ -1,6 +1,6 @@
 package com.jam.ping.api.campsite.controller.response;
 
-import com.jam.ping.api.campsite.domain.CampSite;
+import com.jam.ping.api.campsite.dto.CampSiteDto;
 import com.jam.ping.api.regeion.district.code.DistrictCode;
 import com.jam.ping.api.regeion.region.code.RegionCode;
 import java.util.List;
@@ -20,15 +20,13 @@ public record CampSitePageResponse(
 ) {
 
     public static CampSitePageResponse from(
-            Page<CampSite> campSitePage,
+            Page<CampSiteDto> campSitePage,
             String keyword,
             RegionCode regionCode,
             DistrictCode districtCode
     ) {
         return new CampSitePageResponse(
-                campSitePage.getContent().stream()
-                        .map(CampSiteResponse::from)
-                        .toList(),
+                campSitePage.getContent().stream().map(CampSiteResponse::from).toList(),
                 campSitePage.getNumber(),
                 campSitePage.getSize(),
                 campSitePage.getTotalElements(),

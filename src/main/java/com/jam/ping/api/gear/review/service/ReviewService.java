@@ -4,6 +4,7 @@ import com.jam.ping.api.gear.main.domain.Gear;
 import com.jam.ping.api.gear.main.repository.GearRepository;
 import com.jam.ping.api.gear.review.code.ReviewStatus;
 import com.jam.ping.api.gear.review.domain.Review;
+import com.jam.ping.api.gear.review.dto.ReviewDto;
 import com.jam.ping.api.gear.review.repository.ReviewRepository;
 import com.jam.ping.api.user.main.domain.User;
 import com.jam.ping.api.user.main.service.UserService;
@@ -27,22 +28,23 @@ public class ReviewService {
     private final GearRepository gearRepository;
     private final UserService userService;
 
-    public Page<Review> getActiveReviews(Long gearId, int page, int size) {
+    public Page<ReviewDto> getActiveReviews(Long gearId, int page, int size) {
         findGear(gearId);
-        return reviewRepository.findByGearIdAndStatus(gearId, ReviewStatus.ACTIVE, pageRequest(page, size));
+        return reviewRepository.findByGearIdAndStatus(gearId, ReviewStatus.ACTIVE, pageRequest(page, size))
+                .map(ReviewDto::from);
     }
 
-    public Page<Review> getAllReviewsForAdmin(Long gearId, int page, int size, String sort, String direction, ReviewStatus status) {
+    public Page<ReviewDto> getAllReviewsForAdmin(Long gearId, int page, int size, String sort, String direction, ReviewStatus status) {
         findGear(gearId);
         Pageable pageable = adminPageRequest(page, size, sort, direction);
         if (status != null) {
-            return reviewRepository.findByGearIdAndStatus(gearId, status, pageable);
+            return reviewRepository.findByGearIdAndStatus(gearId, status, pageable).map(ReviewDto::from);
         }
-        return reviewRepository.findByGearId(gearId, pageable);
+        return reviewRepository.findByGearId(gearId, pageable).map(ReviewDto::from);
     }
 
     @Transactional
-    public Review createReview(Long gearId, Integer rating, String content, Long actorUserId) {
+    public ReviewDto createReview(Long gearId, Integer rating, String content, Long actorUserId) {
         Gear gear = findGear(gearId);
         User actorUser = userService.getActorUser(actorUserId);
 
@@ -50,25 +52,18 @@ public class ReviewService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 해당 장비에 후기를 작성했습니다.");
         }
 
-        Review review = Review.builder()
-                .gear(gear)
-                .user(actorUser)
-                .rating(rating)
-                .content(content.trim())
-                .status(ReviewStatus.ACTIVE)
-                .build();
-
-        return reviewRepository.save(review);
+        Review review = Review.create(gear, actorUser, rating, content.trim(), ReviewStatus.ACTIVE);
+        return ReviewDto.from(reviewRepository.save(review));
     }
 
     @Transactional
-    public Review updateReview(Long gearId, Long reviewId, Integer rating, String content, Long actorUserId) {
+    public ReviewDto updateReview(Long gearId, Long reviewId, Integer rating, String content, Long actorUserId) {
         Review review = findReview(gearId, reviewId);
         validateOwner(review, actorUserId);
         validateActiveForOwnerAction(review);
 
         review.update(rating, content.trim());
-        return review;
+        return ReviewDto.from(review);
     }
 
     @Transactional
@@ -81,7 +76,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public Review deactivateReview(Long gearId, Long reviewId, String moderationReason, Long actorUserId) {
+    public ReviewDto deactivateReview(Long gearId, Long reviewId, String moderationReason, Long actorUserId) {
         Review review = findReview(gearId, reviewId);
 
         if (review.getStatus() == ReviewStatus.INACTIVE) {
@@ -90,11 +85,11 @@ public class ReviewService {
 
         User moderator = userService.getActorUser(actorUserId);
         review.deactivate(moderationReason.trim(), moderator, LocalDateTime.now());
-        return review;
+        return ReviewDto.from(review);
     }
 
     @Transactional
-    public Review activateReview(Long gearId, Long reviewId) {
+    public ReviewDto activateReview(Long gearId, Long reviewId) {
         Review review = findReview(gearId, reviewId);
 
         if (review.getStatus() == ReviewStatus.ACTIVE) {
@@ -102,7 +97,7 @@ public class ReviewService {
         }
 
         review.activate();
-        return review;
+        return ReviewDto.from(review);
     }
 
     private Pageable pageRequest(int page, int size) {

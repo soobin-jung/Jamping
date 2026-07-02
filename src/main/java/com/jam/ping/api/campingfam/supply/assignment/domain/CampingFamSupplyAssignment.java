@@ -15,7 +15,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -50,12 +49,13 @@ public class CampingFamSupplyAssignment extends CommonEntity {
     @Column(length = 200)
     private String memo;
 
-    @Builder
-    private CampingFamSupplyAssignment(CampingFamSupply supply, CampingFamMember member, UserGear userGear, String memo) {
-        this.supply = supply;
-        this.member = member;
-        this.userGear = userGear;
-        this.memo = memo;
+    public static CampingFamSupplyAssignment create(CampingFamSupply supply, CampingFamMember member, UserGear userGear, String memo) {
+        CampingFamSupplyAssignment assignment = new CampingFamSupplyAssignment();
+        assignment.supply = supply;
+        assignment.member = member;
+        assignment.userGear = userGear;
+        assignment.memo = memo;
+        return assignment;
     }
 
     public void update(UserGear userGear, String memo) {

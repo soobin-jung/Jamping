@@ -7,7 +7,7 @@ import com.jam.ping.api.gear.review.controller.request.AdminReviewSearchRequest;
 import com.jam.ping.api.gear.review.controller.request.ReviewModerationRequest;
 import com.jam.ping.api.gear.review.controller.response.AdminReviewPageResponse;
 import com.jam.ping.api.gear.review.controller.response.AdminReviewResponse;
-import com.jam.ping.api.gear.review.domain.Review;
+import com.jam.ping.api.gear.review.dto.ReviewDto;
 import com.jam.ping.api.gear.review.service.ReviewService;
 import com.jam.ping.api.user.main.oauth.CustomOAuth2User;
 import jakarta.validation.Valid;
@@ -47,7 +47,7 @@ public class ReviewAdminController {
             @Valid @RequestBody ReviewModerationRequest request,
             @AuthenticationPrincipal CustomOAuth2User oauth2User
     ) {
-        Review review = reviewService.deactivateReview(
+        ReviewDto review = reviewService.deactivateReview(
                 gearId,
                 reviewId,
                 request.moderationReason(),
@@ -56,7 +56,7 @@ public class ReviewAdminController {
 
         return new ApiRes<AdminReviewResponse>()
                 .successData(AdminReviewResponse.from(review))
-                .manipulationOne(review.getId())
+                .manipulationOne(review.id())
                 .responseMsg("후기를 비활성화했습니다.");
     }
 
@@ -65,11 +65,11 @@ public class ReviewAdminController {
             @PathVariable Long gearId,
             @PathVariable Long reviewId
     ) {
-        Review review = reviewService.activateReview(gearId, reviewId);
+        ReviewDto review = reviewService.activateReview(gearId, reviewId);
 
         return new ApiRes<AdminReviewResponse>()
                 .successData(AdminReviewResponse.from(review))
-                .manipulationOne(review.getId())
+                .manipulationOne(review.id())
                 .responseMsg("후기를 재활성화했습니다.");
     }
 }

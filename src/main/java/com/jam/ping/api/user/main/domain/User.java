@@ -13,7 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -49,21 +48,15 @@ public class User extends CommonEntity {
     @Column(nullable = false, length = 20)
     private UserRole role;
 
-    @Builder
-    private User(
-            AuthProvider provider,
-            String providerUserId,
-            String email,
-            String nickname,
-            String profileImageUrl,
-            UserRole role
-    ) {
-        this.provider = provider;
-        this.providerUserId = providerUserId;
-        this.email = email;
-        this.nickname = nickname;
-        this.profileImageUrl = profileImageUrl;
-        this.role = role;
+    public static User create(AuthProvider provider, String providerUserId, String email, String nickname, String profileImageUrl, UserRole role) {
+        User user = new User();
+        user.provider = provider;
+        user.providerUserId = providerUserId;
+        user.email = email;
+        user.nickname = nickname;
+        user.profileImageUrl = profileImageUrl;
+        user.role = role;
+        return user;
     }
 
     public void updateProfile(String email, String nickname, String profileImageUrl) {

@@ -3,6 +3,7 @@ package com.jam.ping.api.campingfam.schedule.service;
 import com.jam.ping.api.campingfam.main.domain.CampingFam;
 import com.jam.ping.api.campingfam.main.repository.CampingFamRepository;
 import com.jam.ping.api.campingfam.schedule.domain.CampingFamScheduleTemp;
+import com.jam.ping.api.campingfam.schedule.dto.CampingFamScheduleTempDto;
 import com.jam.ping.api.campingfam.schedule.repository.CampingFamScheduleTempRepository;
 import java.time.LocalDate;
 import java.util.List;
@@ -21,23 +22,23 @@ public class CampingFamScheduleTempService {
     private final CampingFamRepository campingFamRepository;
 
     @Transactional
-    public List<CampingFamScheduleTemp> submitDates(Long campingFamId, Long userId, List<LocalDate> dates) {
+    public List<CampingFamScheduleTempDto> submitDates(Long campingFamId, Long userId, List<LocalDate> dates) {
         CampingFam campingFam = findCampingFam(campingFamId);
         campingFamScheduleTempRepository.deleteByCampingFamIdAndUserId(campingFamId, userId);
 
         List<CampingFamScheduleTemp> temps = dates.stream()
-                .map(date -> CampingFamScheduleTemp.builder()
-                        .campingFam(campingFam)
-                        .userId(userId)
-                        .selectedDate(date)
-                        .build())
+                .map(date -> CampingFamScheduleTemp.create(campingFam, userId, date))
                 .toList();
 
-        return campingFamScheduleTempRepository.saveAll(temps);
+        return campingFamScheduleTempRepository.saveAll(temps).stream()
+                .map(CampingFamScheduleTempDto::from)
+                .toList();
     }
 
-    public List<CampingFamScheduleTemp> getTempDates(Long campingFamId) {
-        return campingFamScheduleTempRepository.findByCampingFamId(campingFamId);
+    public List<CampingFamScheduleTempDto> getTempDates(Long campingFamId) {
+        return campingFamScheduleTempRepository.findByCampingFamId(campingFamId).stream()
+                .map(CampingFamScheduleTempDto::from)
+                .toList();
     }
 
     @Transactional

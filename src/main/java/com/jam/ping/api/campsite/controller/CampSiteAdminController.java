@@ -4,7 +4,7 @@ import com.jam.ping.api.campsite.controller.request.CampSiteRequest;
 import com.jam.ping.api.campsite.controller.request.CampSiteSearchRequest;
 import com.jam.ping.api.campsite.controller.response.CampSitePageResponse;
 import com.jam.ping.api.campsite.controller.response.CampSiteResponse;
-import com.jam.ping.api.campsite.domain.CampSite;
+import com.jam.ping.api.campsite.dto.CampSiteDto;
 import com.jam.ping.api.campsite.service.CampSiteService;
 import com.jam.ping.global.response.ApiRes;
 import com.jam.ping.global.security.AdminOnly;
@@ -49,7 +49,7 @@ public class CampSiteAdminController {
 
     @PostMapping
     public ResponseEntity<ApiRes<CampSiteResponse>> createCampSite(@Valid @RequestBody CampSiteRequest request) {
-        CampSite campSite = campSiteService.createCampSite(
+        CampSiteDto campSite = campSiteService.createCampSite(
                 request.name(),
                 request.link(),
                 request.regionCode(),
@@ -61,7 +61,7 @@ public class CampSiteAdminController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiRes<CampSiteResponse>()
                         .successData(CampSiteResponse.from(campSite))
-                        .manipulationOne(campSite.getId())
+                        .manipulationOne(campSite.id())
                         .responseMsg("캠핑장 정보가 등록되었습니다."));
     }
 
@@ -70,7 +70,7 @@ public class CampSiteAdminController {
             @PathVariable Long campSiteId,
             @Valid @RequestBody CampSiteRequest request
     ) {
-        CampSite campSite = campSiteService.updateCampSite(
+        CampSiteDto campSite = campSiteService.updateCampSite(
                 campSiteId,
                 request.name(),
                 request.link(),
@@ -82,7 +82,7 @@ public class CampSiteAdminController {
 
         return new ApiRes<CampSiteResponse>()
                 .successData(CampSiteResponse.from(campSite))
-                .manipulationOne(campSite.getId())
+                .manipulationOne(campSite.id())
                 .responseMsg("캠핑장 정보가 수정되었습니다.");
     }
 

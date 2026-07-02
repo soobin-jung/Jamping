@@ -16,7 +16,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -42,10 +41,11 @@ public class CampingFamMember extends CommonEntity {
     @Column(nullable = false, length = 20)
     private CampingFamRole role;
 
-    @Builder
-    private CampingFamMember(CampingFam campingFam, User user, CampingFamRole role) {
-        this.campingFam = campingFam;
-        this.user = user;
-        this.role = role;
+    public static CampingFamMember create(CampingFam campingFam, User user, CampingFamRole role) {
+        CampingFamMember member = new CampingFamMember();
+        member.campingFam = campingFam;
+        member.user = user;
+        member.role = role;
+        return member;
     }
 }

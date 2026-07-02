@@ -18,7 +18,6 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -59,25 +58,14 @@ public class Review extends CommonEntity {
 
     private LocalDateTime moderatedAt;
 
-    @Builder
-    private Review(
-            Gear gear,
-            User user,
-            Integer rating,
-            String content,
-            ReviewStatus status,
-            String moderationReason,
-            User moderatedBy,
-            LocalDateTime moderatedAt
-    ) {
-        this.gear = gear;
-        this.user = user;
-        this.rating = rating;
-        this.content = content;
-        this.status = status;
-        this.moderationReason = moderationReason;
-        this.moderatedBy = moderatedBy;
-        this.moderatedAt = moderatedAt;
+    public static Review create(Gear gear, User user, Integer rating, String content, ReviewStatus status) {
+        Review review = new Review();
+        review.gear = gear;
+        review.user = user;
+        review.rating = rating;
+        review.content = content;
+        review.status = status;
+        return review;
     }
 
     public void update(Integer rating, String content) {

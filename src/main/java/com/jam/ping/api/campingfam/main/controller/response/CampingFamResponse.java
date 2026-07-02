@@ -1,6 +1,6 @@
 package com.jam.ping.api.campingfam.main.controller.response;
 
-import com.jam.ping.api.campingfam.main.domain.CampingFam;
+import com.jam.ping.api.campingfam.main.dto.CampingFamDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -15,16 +15,16 @@ public record CampingFamResponse(
         LocalDateTime updatedAt
 ) {
 
-    public static CampingFamResponse from(CampingFam campingFam) {
+    public static CampingFamResponse from(CampingFamDto dto) {
         return new CampingFamResponse(
-                campingFam.getId(),
-                campingFam.getName(),
-                campingFam.getCampSite().getId(),
-                campingFam.getReservationSites(),
-                campingFam.getCampingStartDate(),
-                campingFam.getCampingEndDate(),
-                campingFam.getCreatedAt(),
-                campingFam.getUpdatedAt()
+                dto.id(),
+                dto.name(),
+                dto.campSiteId(),
+                dto.reservationSites(),
+                dto.campingStartDate(),
+                dto.campingEndDate(),
+                dto.createdAt(),
+                dto.updatedAt()
         );
     }
 }

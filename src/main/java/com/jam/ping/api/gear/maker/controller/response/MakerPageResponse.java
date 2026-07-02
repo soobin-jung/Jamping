@@ -1,6 +1,6 @@
 package com.jam.ping.api.gear.maker.controller.response;
 
-import com.jam.ping.api.gear.maker.domain.Maker;
+import com.jam.ping.api.gear.maker.dto.MakerDto;
 import java.util.List;
 import org.springframework.data.domain.Page;
 
@@ -15,10 +15,7 @@ public record MakerPageResponse(
         String keyword
 ) {
 
-    /**
-     * Page<Maker>를 관리자 목록 응답 형식으로 변환합니다.
-     */
-    public static MakerPageResponse from(Page<Maker> makerPage, String keyword) {
+    public static MakerPageResponse from(Page<MakerDto> makerPage, String keyword) {
         return new MakerPageResponse(
                 makerPage.getContent().stream()
                         .map(MakerResponse::from)

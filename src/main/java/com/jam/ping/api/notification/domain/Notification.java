@@ -13,7 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -43,12 +42,13 @@ public class Notification extends CommonEntity {
     @Column(nullable = false)
     private boolean isRead = false;
 
-    @Builder
-    private Notification(User receiver, NotificationType type, String message, Long referenceId) {
-        this.receiver = receiver;
-        this.type = type;
-        this.message = message;
-        this.referenceId = referenceId;
+    public static Notification create(User receiver, NotificationType type, String message, Long referenceId) {
+        Notification notification = new Notification();
+        notification.receiver = receiver;
+        notification.type = type;
+        notification.message = message;
+        notification.referenceId = referenceId;
+        return notification;
     }
 
     public void read() {

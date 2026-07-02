@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,11 +32,12 @@ public class CampingFamMenu extends CommonEntity {
     @Column(length = 200)
     private String menu;
 
-    @Builder
-    private CampingFamMenu(CampingFam campingFam, LocalDate campingDate, MealType mealType) {
-        this.campingFam = campingFam;
-        this.campingDate = campingDate;
-        this.mealType = mealType;
+    public static CampingFamMenu create(CampingFam campingFam, LocalDate campingDate, MealType mealType) {
+        CampingFamMenu menu = new CampingFamMenu();
+        menu.campingFam = campingFam;
+        menu.campingDate = campingDate;
+        menu.mealType = mealType;
+        return menu;
     }
 
     public void update(String menu) {

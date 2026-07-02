@@ -6,7 +6,7 @@ import com.jam.ping.global.security.AdminOnly;
 import com.jam.ping.api.recipe.category.controller.request.RecipeCategoryRequest;
 import com.jam.ping.api.recipe.category.controller.response.RecipeCategoryPageResponse;
 import com.jam.ping.api.recipe.category.controller.response.RecipeCategoryResponse;
-import com.jam.ping.api.recipe.category.domain.RecipeCategory;
+import com.jam.ping.api.recipe.category.dto.RecipeCategoryDto;
 import com.jam.ping.api.recipe.category.service.RecipeCategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -49,14 +49,14 @@ public class RecipeCategoryAdminController {
     public ResponseEntity<ApiRes<RecipeCategoryResponse>> createRecipeCategory(
             @Valid @RequestBody RecipeCategoryRequest request
     ) {
-        RecipeCategory recipeCategory = recipeCategoryService.createRecipeCategory(
+        RecipeCategoryDto recipeCategory = recipeCategoryService.createRecipeCategory(
                 request.name()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiRes<RecipeCategoryResponse>()
                         .successData(RecipeCategoryResponse.from(recipeCategory))
-                        .manipulationOne(recipeCategory.getId())
+                        .manipulationOne(recipeCategory.id())
                         .responseMsg("레시피 카테고리가 등록되었습니다."));
     }
 
@@ -65,14 +65,14 @@ public class RecipeCategoryAdminController {
             @PathVariable Long id,
             @Valid @RequestBody RecipeCategoryRequest request
     ) {
-        RecipeCategory recipeCategory = recipeCategoryService.updateRecipeCategory(
+        RecipeCategoryDto recipeCategory = recipeCategoryService.updateRecipeCategory(
                 id,
                 request.name()
         );
 
         return new ApiRes<RecipeCategoryResponse>()
                 .successData(RecipeCategoryResponse.from(recipeCategory))
-                .manipulationOne(recipeCategory.getId())
+                .manipulationOne(recipeCategory.id())
                 .responseMsg("레시피 카테고리가 수정되었습니다.");
     }
 

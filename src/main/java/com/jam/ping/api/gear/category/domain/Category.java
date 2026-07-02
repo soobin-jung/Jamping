@@ -7,7 +7,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,10 +25,11 @@ public class Category extends CommonEntity {
     @Column(length = 1000)
     private String memo;
 
-    @Builder
-    private Category(String name, String memo) {
-        this.name = name;
-        this.memo = memo;
+    public static Category create(String name, String memo) {
+        Category category = new Category();
+        category.name = name;
+        category.memo = memo;
+        return category;
     }
 
     public void update(String name, String memo) {

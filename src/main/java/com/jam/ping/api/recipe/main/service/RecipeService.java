@@ -3,6 +3,7 @@ package com.jam.ping.api.recipe.main.service;
 import com.jam.ping.api.recipe.category.domain.RecipeCategory;
 import com.jam.ping.api.recipe.category.repository.RecipeCategoryRepository;
 import com.jam.ping.api.recipe.main.domain.Recipe;
+import com.jam.ping.api.recipe.main.dto.RecipeDto;
 import com.jam.ping.api.recipe.main.repository.RecipeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,7 +23,7 @@ public class RecipeService {
     private final RecipeRepository recipeRepository;
     private final RecipeCategoryRepository recipeCategoryRepository;
 
-    public Page<Recipe> getRecipes(Long recipeCategoryId, String keyword, int page, int size) {
+    public Page<RecipeDto> getRecipes(Long recipeCategoryId, String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(
                 Math.max(page, 0),
                 Math.min(Math.max(size, 1), 50),
@@ -34,50 +35,42 @@ public class RecipeService {
         boolean hasKeyword = !normalizedKeyword.isBlank();
 
         if (!hasCategory && !hasKeyword) {
-            return recipeRepository.findAll(pageable);
+            return recipeRepository.findAll(pageable).map(RecipeDto::from);
         }
         if (hasCategory && !hasKeyword) {
-            return recipeRepository.findByRecipeCategoryId(recipeCategoryId, pageable);
+            return recipeRepository.findByRecipeCategoryId(recipeCategoryId, pageable).map(RecipeDto::from);
         }
         if (!hasCategory) {
-            return recipeRepository.findByNameContainingIgnoreCase(normalizedKeyword, pageable);
+            return recipeRepository.findByNameContainingIgnoreCase(normalizedKeyword, pageable).map(RecipeDto::from);
         }
-        return recipeRepository.findByRecipeCategoryIdAndNameContainingIgnoreCase(recipeCategoryId, normalizedKeyword, pageable);
+        return recipeRepository.findByRecipeCategoryIdAndNameContainingIgnoreCase(recipeCategoryId, normalizedKeyword, pageable).map(RecipeDto::from);
     }
 
-    public Recipe getRecipe(Long id) {
-        return findRecipe(id);
+    public RecipeDto getRecipe(Long id) {
+        return RecipeDto.from(findRecipe(id));
     }
 
     @Transactional
-    public Recipe createRecipe(String name, String ingredients, String instructions, Long recipeCategoryId) {
+    public RecipeDto createRecipe(String name, String ingredients, String instructions, Long recipeCategoryId) {
         RecipeCategory recipeCategory = findRecipeCategory(recipeCategoryId);
         validateDuplicate(recipeCategory.getId(), name, null);
 
-        Recipe recipe = Recipe.builder()
-                .name(name)
-                .ingredients(ingredients)
-                .instructions(instructions)
-                .recipeCategory(recipeCategory)
-                .build();
-
-        return recipeRepository.save(recipe);
+        return RecipeDto.from(recipeRepository.save(Recipe.create(name, ingredients, instructions, recipeCategory)));
     }
 
     @Transactional
-    public Recipe updateRecipe(Long id, String name, String ingredients, String instructions, Long recipeCategoryId) {
+    public RecipeDto updateRecipe(Long id, String name, String ingredients, String instructions, Long recipeCategoryId) {
         Recipe recipe = findRecipe(id);
         RecipeCategory recipeCategory = findRecipeCategory(recipeCategoryId);
         validateDuplicate(recipeCategory.getId(), name, id);
 
         recipe.update(name, ingredients, instructions, recipeCategory);
-        return recipe;
+        return RecipeDto.from(recipe);
     }
 
     @Transactional
     public void deleteRecipe(Long id) {
-        Recipe recipe = findRecipe(id);
-        recipeRepository.delete(recipe);
+        recipeRepository.delete(findRecipe(id));
     }
 
     private Recipe findRecipe(Long id) {

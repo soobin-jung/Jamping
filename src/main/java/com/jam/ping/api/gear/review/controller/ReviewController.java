@@ -6,7 +6,7 @@ import com.jam.ping.global.security.AuthUtils;
 import com.jam.ping.api.gear.review.controller.request.ReviewRequest;
 import com.jam.ping.api.gear.review.controller.response.ReviewPageResponse;
 import com.jam.ping.api.gear.review.controller.response.ReviewResponse;
-import com.jam.ping.api.gear.review.domain.Review;
+import com.jam.ping.api.gear.review.dto.ReviewDto;
 import com.jam.ping.api.gear.review.service.ReviewService;
 import com.jam.ping.api.user.main.oauth.CustomOAuth2User;
 import jakarta.validation.Valid;
@@ -50,17 +50,18 @@ public class ReviewController {
             @Valid @RequestBody ReviewRequest request,
             @AuthenticationPrincipal CustomOAuth2User oauth2User
     ) {
-        Review review = reviewService.createReview(
+        Long actorUserId = AuthUtils.getActorUserId(oauth2User);
+        ReviewDto review = reviewService.createReview(
                 gearId,
                 request.rating(),
                 request.content(),
-                AuthUtils.getActorUserId(oauth2User)
+                actorUserId
         );
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiRes<ReviewResponse>()
-                        .successData(ReviewResponse.from(review, AuthUtils.getActorUserId(oauth2User)))
-                        .manipulationOne(review.getId())
+                        .successData(ReviewResponse.from(review, actorUserId))
+                        .manipulationOne(review.id())
                         .responseMsg("후기를 등록했습니다."));
     }
 
@@ -71,17 +72,18 @@ public class ReviewController {
             @Valid @RequestBody ReviewRequest request,
             @AuthenticationPrincipal CustomOAuth2User oauth2User
     ) {
-        Review review = reviewService.updateReview(
+        Long actorUserId = AuthUtils.getActorUserId(oauth2User);
+        ReviewDto review = reviewService.updateReview(
                 gearId,
                 reviewId,
                 request.rating(),
                 request.content(),
-                AuthUtils.getActorUserId(oauth2User)
+                actorUserId
         );
 
         return new ApiRes<ReviewResponse>()
-                .successData(ReviewResponse.from(review, AuthUtils.getActorUserId(oauth2User)))
-                .manipulationOne(review.getId())
+                .successData(ReviewResponse.from(review, actorUserId))
+                .manipulationOne(review.id())
                 .responseMsg("후기를 수정했습니다.");
     }
 

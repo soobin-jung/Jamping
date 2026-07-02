@@ -1,6 +1,6 @@
 package com.jam.ping.api.gear.category.controller.response;
 
-import com.jam.ping.api.gear.category.domain.Category;
+import com.jam.ping.api.gear.category.dto.CategoryDto;
 import java.time.LocalDateTime;
 
 public record CategoryResponse(
@@ -13,18 +13,10 @@ public record CategoryResponse(
         String memo
 ) {
 
-    /**
-     * Category 엔티티를 관리자 응답 형식으로 변환합니다.
-     */
-    public static CategoryResponse from(Category category) {
+    public static CategoryResponse from(CategoryDto dto) {
         return new CategoryResponse(
-                category.getId(),
-                category.getName(),
-                category.getCreatedAt(),
-                category.getUpdatedAt(),
-                category.getCreatedById(),
-                category.getUpdatedById(),
-                category.getMemo()
+                dto.id(), dto.name(), dto.createdAt(), dto.updatedAt(),
+                dto.createdById(), dto.updatedById(), dto.memo()
         );
     }
 }

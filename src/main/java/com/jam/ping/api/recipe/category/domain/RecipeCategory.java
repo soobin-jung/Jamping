@@ -7,7 +7,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,9 +22,10 @@ public class RecipeCategory extends CommonEntity {
     @Column(nullable = false, length = 100)
     private String name;
 
-    @Builder
-    private RecipeCategory(String name) {
-        this.name = name;
+    public static RecipeCategory create(String name) {
+        RecipeCategory category = new RecipeCategory();
+        category.name = name;
+        return category;
     }
 
     public void update(String name) {

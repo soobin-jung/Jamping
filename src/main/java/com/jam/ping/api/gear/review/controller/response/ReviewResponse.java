@@ -1,6 +1,6 @@
 package com.jam.ping.api.gear.review.controller.response;
 
-import com.jam.ping.api.gear.review.domain.Review;
+import com.jam.ping.api.gear.review.dto.ReviewDto;
 import java.time.LocalDateTime;
 
 public record ReviewResponse(
@@ -16,20 +16,18 @@ public record ReviewResponse(
         boolean isMine
 ) {
 
-    public static ReviewResponse from(Review review, Long actorUserId) {
-        Long reviewUserId = review.getUser().getId();
-
+    public static ReviewResponse from(ReviewDto dto, Long actorUserId) {
         return new ReviewResponse(
-                review.getId(),
-                review.getGear().getId(),
-                reviewUserId,
-                review.getUser().getNickname(),
-                review.getUser().getProfileImageUrl(),
-                review.getRating(),
-                review.getContent(),
-                review.getCreatedAt(),
-                review.getUpdatedAt(),
-                actorUserId != null && actorUserId.equals(reviewUserId)
+                dto.id(),
+                dto.gearId(),
+                dto.userId(),
+                dto.nickname(),
+                dto.profileImageUrl(),
+                dto.rating(),
+                dto.content(),
+                dto.createdAt(),
+                dto.updatedAt(),
+                actorUserId != null && actorUserId.equals(dto.userId())
         );
     }
 }

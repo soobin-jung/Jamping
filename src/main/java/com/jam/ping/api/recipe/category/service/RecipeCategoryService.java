@@ -1,6 +1,7 @@
 package com.jam.ping.api.recipe.category.service;
 
 import com.jam.ping.api.recipe.category.domain.RecipeCategory;
+import com.jam.ping.api.recipe.category.dto.RecipeCategoryDto;
 import com.jam.ping.api.recipe.category.repository.RecipeCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,7 +20,7 @@ public class RecipeCategoryService {
 
     private final RecipeCategoryRepository recipeCategoryRepository;
 
-    public Page<RecipeCategory> getRecipeCategories(String keyword, int page, int size) {
+    public Page<RecipeCategoryDto> getRecipeCategories(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(
                 Math.max(page, 0),
                 Math.min(Math.max(size, 1), 50),
@@ -29,42 +30,36 @@ public class RecipeCategoryService {
         String normalizedKeyword = keyword == null ? "" : keyword.trim();
 
         if (normalizedKeyword.isBlank()) {
-            return recipeCategoryRepository.findAll(pageable);
+            return recipeCategoryRepository.findAll(pageable).map(RecipeCategoryDto::from);
         }
 
-        return recipeCategoryRepository.findByNameContainingIgnoreCase(normalizedKeyword, pageable);
+        return recipeCategoryRepository.findByNameContainingIgnoreCase(normalizedKeyword, pageable).map(RecipeCategoryDto::from);
     }
 
-    public RecipeCategory getRecipeCategory(Long id) {
-        return findRecipeCategory(id);
+    public RecipeCategoryDto getRecipeCategory(Long id) {
+        return RecipeCategoryDto.from(findRecipeCategory(id));
     }
 
     @Transactional
-    public RecipeCategory createRecipeCategory(String name) {
+    public RecipeCategoryDto createRecipeCategory(String name) {
         validateDuplicateName(name, null);
-
-        RecipeCategory recipeCategory = RecipeCategory.builder()
-                .name(name)
-                .build();
-
-        return recipeCategoryRepository.save(recipeCategory);
+        return RecipeCategoryDto.from(recipeCategoryRepository.save(RecipeCategory.create(name)));
     }
 
     @Transactional
-    public RecipeCategory updateRecipeCategory(Long id, String name) {
+    public RecipeCategoryDto updateRecipeCategory(Long id, String name) {
         validateDuplicateName(name, id);
         RecipeCategory recipeCategory = findRecipeCategory(id);
         recipeCategory.update(name);
-        return recipeCategory;
+        return RecipeCategoryDto.from(recipeCategory);
     }
 
     @Transactional
     public void deleteRecipeCategory(Long id) {
-        RecipeCategory recipeCategory = findRecipeCategory(id);
-        recipeCategoryRepository.delete(recipeCategory);
+        recipeCategoryRepository.delete(findRecipeCategory(id));
     }
 
-    private RecipeCategory findRecipeCategory(Long id) {
+    RecipeCategory findRecipeCategory(Long id) {
         return recipeCategoryRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "레시피 카테고리를 찾을 수 없습니다."));
     }

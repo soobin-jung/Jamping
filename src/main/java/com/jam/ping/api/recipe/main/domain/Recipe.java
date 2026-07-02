@@ -11,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -37,12 +36,13 @@ public class Recipe extends CommonEntity {
     @JoinColumn(name = "recipe_category_id", nullable = false)
     private RecipeCategory recipeCategory;
 
-    @Builder
-    private Recipe(String name, String ingredients, String instructions, RecipeCategory recipeCategory) {
-        this.name = name;
-        this.ingredients = ingredients;
-        this.instructions = instructions;
-        this.recipeCategory = recipeCategory;
+    public static Recipe create(String name, String ingredients, String instructions, RecipeCategory recipeCategory) {
+        Recipe recipe = new Recipe();
+        recipe.name = name;
+        recipe.ingredients = ingredients;
+        recipe.instructions = instructions;
+        recipe.recipeCategory = recipeCategory;
+        return recipe;
     }
 
     public void update(String name, String ingredients, String instructions, RecipeCategory recipeCategory) {

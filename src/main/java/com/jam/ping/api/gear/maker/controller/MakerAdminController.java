@@ -6,7 +6,7 @@ import com.jam.ping.global.security.AdminOnly;
 import com.jam.ping.api.gear.maker.controller.request.MakerRequest;
 import com.jam.ping.api.gear.maker.controller.response.MakerPageResponse;
 import com.jam.ping.api.gear.maker.controller.response.MakerResponse;
-import com.jam.ping.api.gear.maker.domain.Maker;
+import com.jam.ping.api.gear.maker.dto.MakerDto;
 import com.jam.ping.api.gear.maker.service.MakerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +49,7 @@ public class MakerAdminController {
     public ResponseEntity<ApiRes<MakerResponse>> createMaker(
             @Valid @RequestBody MakerRequest request
     ) {
-        Maker maker = makerService.createMaker(
+        MakerDto maker = makerService.createMaker(
                 request.name(),
                 request.nameEng(),
                 request.homepageUrl()
@@ -58,7 +58,7 @@ public class MakerAdminController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiRes<MakerResponse>()
                         .successData(MakerResponse.from(maker))
-                        .manipulationOne(maker.getId())
+                        .manipulationOne(maker.id())
                         .responseMsg("메이커가 등록되었습니다."));
     }
 
@@ -67,7 +67,7 @@ public class MakerAdminController {
             @PathVariable Long makerId,
             @Valid @RequestBody MakerRequest request
     ) {
-        Maker maker = makerService.updateMaker(
+        MakerDto maker = makerService.updateMaker(
                 makerId,
                 request.name(),
                 request.nameEng(),
@@ -76,7 +76,7 @@ public class MakerAdminController {
 
         return new ApiRes<MakerResponse>()
                 .successData(MakerResponse.from(maker))
-                .manipulationOne(maker.getId())
+                .manipulationOne(maker.id())
                 .responseMsg("메이커가 수정되었습니다.");
     }
 

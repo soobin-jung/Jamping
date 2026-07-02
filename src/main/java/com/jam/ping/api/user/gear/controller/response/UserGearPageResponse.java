@@ -1,6 +1,6 @@
 package com.jam.ping.api.user.gear.controller.response;
 
-import com.jam.ping.api.user.gear.domain.UserGear;
+import com.jam.ping.api.user.gear.dto.UserGearDto;
 import java.util.List;
 import org.springframework.data.domain.Page;
 
@@ -14,7 +14,7 @@ public record UserGearPageResponse(
         boolean hasPrevious
 ) {
 
-    public static UserGearPageResponse from(Page<UserGear> userGearPage) {
+    public static UserGearPageResponse from(Page<UserGearDto> userGearPage) {
         return new UserGearPageResponse(
                 userGearPage.getContent().stream()
                         .map(UserGearResponse::from)

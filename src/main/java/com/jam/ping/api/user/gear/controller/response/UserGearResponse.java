@@ -1,6 +1,6 @@
 package com.jam.ping.api.user.gear.controller.response;
 
-import com.jam.ping.api.user.gear.domain.UserGear;
+import com.jam.ping.api.user.gear.dto.UserGearDto;
 import java.time.LocalDateTime;
 
 public record UserGearResponse(
@@ -19,21 +19,21 @@ public record UserGearResponse(
         LocalDateTime updatedAt
 ) {
 
-    public static UserGearResponse from(UserGear userGear) {
+    public static UserGearResponse from(UserGearDto dto) {
         return new UserGearResponse(
-                userGear.getId(),
-                userGear.getUser().getId(),
-                userGear.getUser().getNickname(),
-                userGear.getCategory().getId(),
-                userGear.getCategory().getName(),
-                userGear.getMaker() == null ? null : userGear.getMaker().getId(),
-                userGear.getMaker() == null ? null : userGear.getMaker().getName(),
-                userGear.getGear() == null ? null : userGear.getGear().getId(),
-                userGear.getGear() == null ? null : userGear.getGear().getName(),
-                userGear.getName(),
-                userGear.getMemo(),
-                userGear.getCreatedAt(),
-                userGear.getUpdatedAt()
+                dto.id(),
+                dto.userId(),
+                dto.userNickname(),
+                dto.categoryId(),
+                dto.categoryName(),
+                dto.makerId(),
+                dto.makerName(),
+                dto.gearId(),
+                dto.gearName(),
+                dto.name(),
+                dto.memo(),
+                dto.createdAt(),
+                dto.updatedAt()
         );
     }
 }

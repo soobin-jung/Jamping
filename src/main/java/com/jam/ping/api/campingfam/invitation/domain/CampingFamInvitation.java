@@ -16,7 +16,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -53,14 +52,15 @@ public class CampingFamInvitation extends CommonEntity {
     @Column(nullable = false)
     private LocalDateTime expiredAt;
 
-    @Builder
-    private CampingFamInvitation(CampingFam campingFam, CampingFamMember inviter, String email, User invitedUser, String token, LocalDateTime expiredAt) {
-        this.campingFam = campingFam;
-        this.inviter = inviter;
-        this.email = email;
-        this.invitedUser = invitedUser;
-        this.token = token;
-        this.expiredAt = expiredAt;
+    public static CampingFamInvitation create(CampingFam campingFam, CampingFamMember inviter, String email, User invitedUser, String token, LocalDateTime expiredAt) {
+        CampingFamInvitation invitation = new CampingFamInvitation();
+        invitation.campingFam = campingFam;
+        invitation.inviter = inviter;
+        invitation.email = email;
+        invitation.invitedUser = invitedUser;
+        invitation.token = token;
+        invitation.expiredAt = expiredAt;
+        return invitation;
     }
 
     public void accept() {

@@ -17,7 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public abstract class CommonEntity {
 
     @CreatedBy
-    @Column(updatable = false)
+    @Column(nullable = true, updatable = false)
     protected Long createdById;
 
     @CreatedDate
@@ -25,6 +25,7 @@ public abstract class CommonEntity {
     protected LocalDateTime createdAt;
 
     @LastModifiedBy
+    @Column(nullable = true)
     protected Long updatedById;
 
     @LastModifiedDate

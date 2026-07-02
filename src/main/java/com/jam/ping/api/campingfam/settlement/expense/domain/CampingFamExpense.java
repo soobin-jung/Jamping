@@ -12,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import java.math.BigDecimal;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -39,12 +38,13 @@ public class CampingFamExpense extends CommonEntity {
     
     // 추후에 s3 연동되면 영수증 사진 경로도 고려
 
-    @Builder
-    private CampingFamExpense(CampingFam campingFam, CampingFamMember payer, BigDecimal amount, String itemName) {
-        this.campingFam = campingFam;
-        this.payer = payer;
-        this.amount = amount;
-        this.itemName = itemName;
+    public static CampingFamExpense create(CampingFam campingFam, CampingFamMember payer, BigDecimal amount, String itemName) {
+        CampingFamExpense expense = new CampingFamExpense();
+        expense.campingFam = campingFam;
+        expense.payer = payer;
+        expense.amount = amount;
+        expense.itemName = itemName;
+        return expense;
     }
 
     public void update(BigDecimal amount, String itemName) {

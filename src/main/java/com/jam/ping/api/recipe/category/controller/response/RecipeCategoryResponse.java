@@ -1,6 +1,6 @@
 package com.jam.ping.api.recipe.category.controller.response;
 
-import com.jam.ping.api.recipe.category.domain.RecipeCategory;
+import com.jam.ping.api.recipe.category.dto.RecipeCategoryDto;
 import java.time.LocalDateTime;
 
 public record RecipeCategoryResponse(
@@ -12,14 +12,14 @@ public record RecipeCategoryResponse(
         Long updatedById
 ) {
 
-    public static RecipeCategoryResponse from(RecipeCategory recipeCategory) {
+    public static RecipeCategoryResponse from(RecipeCategoryDto dto) {
         return new RecipeCategoryResponse(
-                recipeCategory.getId(),
-                recipeCategory.getName(),
-                recipeCategory.getCreatedAt(),
-                recipeCategory.getUpdatedAt(),
-                recipeCategory.getCreatedById(),
-                recipeCategory.getUpdatedById()
+                dto.id(),
+                dto.name(),
+                dto.createdAt(),
+                dto.updatedAt(),
+                dto.createdById(),
+                dto.updatedById()
         );
     }
 }

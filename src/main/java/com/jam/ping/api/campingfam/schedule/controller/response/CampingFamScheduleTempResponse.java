@@ -1,6 +1,6 @@
 package com.jam.ping.api.campingfam.schedule.controller.response;
 
-import com.jam.ping.api.campingfam.schedule.domain.CampingFamScheduleTemp;
+import com.jam.ping.api.campingfam.schedule.dto.CampingFamScheduleTempDto;
 import java.time.LocalDate;
 
 public record CampingFamScheduleTempResponse(
@@ -10,12 +10,12 @@ public record CampingFamScheduleTempResponse(
         LocalDate selectedDate
 ) {
 
-    public static CampingFamScheduleTempResponse from(CampingFamScheduleTemp temp) {
+    public static CampingFamScheduleTempResponse from(CampingFamScheduleTempDto dto) {
         return new CampingFamScheduleTempResponse(
-                temp.getId(),
-                temp.getCampingFam().getId(),
-                temp.getUserId(),
-                temp.getSelectedDate()
+                dto.id(),
+                dto.campingFamId(),
+                dto.userId(),
+                dto.selectedDate()
         );
     }
 }

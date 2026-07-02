@@ -1,6 +1,6 @@
 package com.jam.ping.api.gear.review.controller.response;
 
-import com.jam.ping.api.gear.review.domain.Review;
+import com.jam.ping.api.gear.review.dto.ReviewDto;
 import java.util.List;
 import org.springframework.data.domain.Page;
 
@@ -14,7 +14,7 @@ public record AdminReviewPageResponse(
         boolean hasPrevious
 ) {
 
-    public static AdminReviewPageResponse from(Page<Review> reviewPage) {
+    public static AdminReviewPageResponse from(Page<ReviewDto> reviewPage) {
         return new AdminReviewPageResponse(
                 reviewPage.getContent().stream()
                         .map(AdminReviewResponse::from)

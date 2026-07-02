@@ -13,7 +13,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.math.BigDecimal;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -38,10 +37,11 @@ public class CampingFamSettlement extends CommonEntity {
     @Column(nullable = false, precision = 12, scale = 0)
     private BigDecimal amount;
 
-    @Builder
-    private CampingFamSettlement(CampingFamExpense expense, CampingFamMember debtor, BigDecimal amount) {
-        this.expense = expense;
-        this.debtor = debtor;
-        this.amount = amount;
+    public static CampingFamSettlement create(CampingFamExpense expense, CampingFamMember debtor, BigDecimal amount) {
+        CampingFamSettlement settlement = new CampingFamSettlement();
+        settlement.expense = expense;
+        settlement.debtor = debtor;
+        settlement.amount = amount;
+        return settlement;
     }
 }

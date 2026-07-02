@@ -1,11 +1,18 @@
 package com.jam.ping.api.campingfam.main.service;
 
 import com.jam.ping.api.campingfam.main.domain.CampingFam;
+import com.jam.ping.api.campingfam.main.dto.CampingFamDto;
 import com.jam.ping.api.campingfam.main.repository.CampingFamRepository;
+import com.jam.ping.api.campingfam.member.code.CampingFamRole;
+import com.jam.ping.api.campingfam.member.domain.CampingFamMember;
+import com.jam.ping.api.campingfam.member.repository.CampingFamMemberRepository;
 import com.jam.ping.api.campingfam.menu.service.CampingFamMenuService;
 import com.jam.ping.api.campingfam.schedule.service.CampingFamScheduleTempService;
 import com.jam.ping.api.campsite.domain.CampSite;
 import com.jam.ping.api.campsite.repository.CampSiteRepository;
+import com.jam.ping.api.user.main.domain.User;
+import com.jam.ping.api.user.main.repository.UserRepository;
+import com.jam.ping.global.security.AuthUtils;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,27 +26,32 @@ import org.springframework.web.server.ResponseStatusException;
 public class CampingFamService {
 
     private final CampingFamRepository campingFamRepository;
+    private final CampingFamMemberRepository campingFamMemberRepository;
     private final CampingFamMenuService campingFamMenuService;
     private final CampingFamScheduleTempService campingFamScheduleTempService;
     private final CampSiteRepository campSiteRepository;
+    private final UserRepository userRepository;
 
-    public CampingFam getCampingFam(Long id) {
-        return findCampingFam(id);
+    public CampingFamDto getCampingFam(Long id) {
+        return CampingFamDto.from(findCampingFam(id));
     }
 
     @Transactional
-    public CampingFam createCampingFam(String name, Long campSiteId, String reservationSites) {
+    public CampingFamDto createCampingFam(String name, Long campSiteId, String reservationSites) {
         CampSite campSite = findCampSite(campSiteId);
-        CampingFam campingFam = CampingFam.builder()
-                .name(name)
-                .campSite(campSite)
-                .reservationSites(reservationSites)
-                .build();
-        return campingFamRepository.save(campingFam);
+        User creator = userRepository.findById(AuthUtils.getCurrentUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
+
+        CampingFam campingFam = CampingFam.create(name, campSite, reservationSites);
+        campingFamRepository.save(campingFam);
+
+        campingFamMemberRepository.save(CampingFamMember.create(campingFam, creator, CampingFamRole.HOST));
+
+        return CampingFamDto.from(campingFam);
     }
 
     @Transactional
-    public CampingFam finalizeSchedule(Long campingFamId, LocalDate startDate, LocalDate endDate) {
+    public CampingFamDto finalizeSchedule(Long campingFamId, LocalDate startDate, LocalDate endDate) {
         if (endDate.isBefore(startDate)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "종료일은 시작일 이후여야 합니다.");
         }
@@ -49,7 +61,7 @@ public class CampingFamService {
         campingFamMenuService.deleteMenusByCampingFamId(campingFamId);
         campingFamMenuService.initMenus(campingFam, startDate, endDate);
 
-        return campingFam;
+        return CampingFamDto.from(campingFam);
     }
 
     @Transactional

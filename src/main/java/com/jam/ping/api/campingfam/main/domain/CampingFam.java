@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,11 +33,12 @@ public class CampingFam extends CommonEntity {
     @Column(nullable = true)
     private LocalDate campingEndDate;
 
-    @Builder
-    private CampingFam(String name, CampSite campSite, String reservationSites) {
-        this.name = name;
-        this.campSite = campSite;
-        this.reservationSites = reservationSites;
+    public static CampingFam create(String name, CampSite campSite, String reservationSites) {
+        CampingFam campingFam = new CampingFam();
+        campingFam.name = name;
+        campingFam.campSite = campSite;
+        campingFam.reservationSites = reservationSites;
+        return campingFam;
     }
 
     public void updateSchedule(LocalDate startDate, LocalDate endDate) {

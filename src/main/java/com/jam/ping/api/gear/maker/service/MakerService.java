@@ -1,6 +1,7 @@
 package com.jam.ping.api.gear.maker.service;
 
 import com.jam.ping.api.gear.maker.domain.Maker;
+import com.jam.ping.api.gear.maker.dto.MakerDto;
 import com.jam.ping.api.gear.maker.repository.MakerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,10 +20,7 @@ public class MakerService {
 
     private final MakerRepository makerRepository;
 
-    /**
-     * 관리자 화면에서 사용하는 메이커 목록을 검색 조건과 페이지 범위로 조회합니다.
-     */
-    public Page<Maker> getMakers(String keyword, int page, int size) {
+    public Page<MakerDto> getMakers(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(
                 Math.max(page, 0),
                 Math.min(Math.max(size, 1), 50),
@@ -32,63 +30,39 @@ public class MakerService {
         String normalizedKeyword = keyword == null ? "" : keyword.trim();
 
         if (normalizedKeyword.isBlank()) {
-            return makerRepository.findAll(pageable);
+            return makerRepository.findAll(pageable).map(MakerDto::from);
         }
 
         return makerRepository.findByNameContainingIgnoreCaseOrNameEngContainingIgnoreCase(
                 normalizedKeyword,
                 normalizedKeyword,
                 pageable
-        );
+        ).map(MakerDto::from);
     }
 
-    /**
-     * 요청한 ID의 메이커를 조회합니다.
-     */
-    public Maker getMaker(Long makerId) {
-        return findMaker(makerId);
+    public MakerDto getMaker(Long makerId) {
+        return MakerDto.from(findMaker(makerId));
     }
 
-    /**
-     * 새로운 메이커를 생성합니다.
-     */
     @Transactional
-    public Maker createMaker(String name, String nameEng, String homepageUrl) {
+    public MakerDto createMaker(String name, String nameEng, String homepageUrl) {
         validateDuplicate(name, nameEng, null);
-
-        Maker maker = Maker.builder()
-                .name(name)
-                .nameEng(nameEng)
-                .homepageUrl(homepageUrl)
-                .build();
-
-        return makerRepository.save(maker);
+        return MakerDto.from(makerRepository.save(Maker.create(name, nameEng, homepageUrl)));
     }
 
-    /**
-     * 기존 메이커 정보를 수정합니다.
-     */
     @Transactional
-    public Maker updateMaker(Long makerId, String name, String nameEng, String homepageUrl) {
+    public MakerDto updateMaker(Long makerId, String name, String nameEng, String homepageUrl) {
         validateDuplicate(name, nameEng, makerId);
-
         Maker maker = findMaker(makerId);
         maker.update(name, nameEng, homepageUrl);
-        return maker;
+        return MakerDto.from(maker);
     }
 
-    /**
-     * 선택한 메이커를 삭제합니다.
-     */
     @Transactional
     public void deleteMaker(Long makerId) {
-        Maker maker = findMaker(makerId);
-        makerRepository.delete(maker);
+        makerRepository.delete(findMaker(makerId));
     }
 
-    /**
-     * 공통 조회 메서드로 메이커를 찾고, 없으면 404 예외를 발생시킵니다.
-     */
     private Maker findMaker(Long makerId) {
         return makerRepository.findById(makerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "메이커를 찾을 수 없습니다."));

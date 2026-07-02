@@ -2,6 +2,7 @@ package com.jam.ping.api.notification.service;
 
 import com.jam.ping.api.notification.code.NotificationType;
 import com.jam.ping.api.notification.domain.Notification;
+import com.jam.ping.api.notification.dto.NotificationDto;
 import com.jam.ping.api.notification.repository.NotificationRepository;
 import com.jam.ping.api.user.main.domain.User;
 import java.util.List;
@@ -18,8 +19,11 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
 
-    public List<Notification> getMyNotifications(Long userId) {
-        return notificationRepository.findByReceiverIdOrderByCreatedAtDesc(userId);
+    public List<NotificationDto> getMyNotifications(Long userId) {
+        return notificationRepository.findByReceiverIdOrderByCreatedAtDesc(userId)
+                .stream()
+                .map(NotificationDto::from)
+                .toList();
     }
 
     public int getUnreadCount(Long userId) {
@@ -40,13 +44,6 @@ public class NotificationService {
 
     @Transactional
     public Notification createNotification(User receiver, NotificationType type, String message, Long referenceId) {
-        return notificationRepository.save(
-                Notification.builder()
-                        .receiver(receiver)
-                        .type(type)
-                        .message(message)
-                        .referenceId(referenceId)
-                        .build()
-        );
+        return notificationRepository.save(Notification.create(receiver, type, message, referenceId));
     }
 }

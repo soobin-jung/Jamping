@@ -2,6 +2,7 @@ package com.jam.ping.api.user.main.service;
 
 import com.jam.ping.api.user.main.code.UserRole;
 import com.jam.ping.api.user.main.domain.User;
+import com.jam.ping.api.user.main.dto.UserDto;
 import com.jam.ping.api.user.main.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,10 +21,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    /**
-     * 관리자 화면에서 사용자 목록을 검색 조건과 페이지 정보로 조회합니다.
-     */
-    public Page<User> getUsers(String keyword, UserRole role, int page, int size) {
+    public Page<UserDto> getUsers(String keyword, UserRole role, int page, int size) {
         Pageable pageable = PageRequest.of(
                 Math.max(page, 0),
                 Math.min(Math.max(size, 1), 50),
@@ -33,53 +31,35 @@ public class UserService {
         String normalizedKeyword = keyword == null ? "" : keyword.trim();
 
         if (role == null && normalizedKeyword.isBlank()) {
-            return userRepository.findAllByOrderByIdDesc(pageable);
+            return userRepository.findAllByOrderByIdDesc(pageable).map(UserDto::from);
         }
-
         if (role != null && normalizedKeyword.isBlank()) {
-            return userRepository.findByRoleOrderByIdDesc(role, pageable);
+            return userRepository.findByRoleOrderByIdDesc(role, pageable).map(UserDto::from);
         }
-
         if (role == null) {
             return userRepository.findByNicknameContainingIgnoreCaseOrEmailContainingIgnoreCaseOrderByIdDesc(
-                    normalizedKeyword,
-                    normalizedKeyword,
-                    pageable
-            );
+                    normalizedKeyword, normalizedKeyword, pageable
+            ).map(UserDto::from);
         }
 
         return userRepository.findByRoleAndNicknameContainingIgnoreCaseOrRoleAndEmailContainingIgnoreCaseOrderByIdDesc(
-                role,
-                normalizedKeyword,
-                role,
-                normalizedKeyword,
-                pageable
-        );
+                role, normalizedKeyword, role, normalizedKeyword, pageable
+        ).map(UserDto::from);
     }
 
-    /**
-     * 관리자 화면에서 단건 사용자 정보를 조회합니다.
-     */
-    public User getUser(Long userId) {
-        return findUser(userId);
+    public UserDto getUser(Long userId) {
+        return UserDto.from(findUser(userId));
     }
 
-    /**
-     * 감사 이력에 사용할 사용자 정보를 조회합니다.
-     */
     public User getActorUser(Long userId) {
         if (userId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "인증된 사용자 정보를 찾을 수 없습니다.");
         }
-
         return findUser(userId);
     }
 
-    /**
-     * 관리자 화면에서 사용자 권한을 변경합니다.
-     */
     @Transactional
-    public User updateUserRole(Long userId, UserRole role) {
+    public UserDto updateUserRole(Long userId, UserRole role) {
         User user = findUser(userId);
 
         if (user.getRole() == role) {
@@ -87,12 +67,9 @@ public class UserService {
         }
 
         user.changeRole(role);
-        return user;
+        return UserDto.from(user);
     }
 
-    /**
-     * 관리자/공통 로직에서 사용할 사용자 단건 조회 메서드입니다.
-     */
     private User findUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."));

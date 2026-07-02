@@ -10,7 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,10 +28,11 @@ public class CampingFamSupply extends CommonEntity {
     @Column(nullable = false, length = 100)
     private String name;
 
-    @Builder
-    private CampingFamSupply(CampingFam campingFam, String name) {
-        this.campingFam = campingFam;
-        this.name = name;
+    public static CampingFamSupply create(CampingFam campingFam, String name) {
+        CampingFamSupply supply = new CampingFamSupply();
+        supply.campingFam = campingFam;
+        supply.name = name;
+        return supply;
     }
 
     public void updateName(String name) {

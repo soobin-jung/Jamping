@@ -2,6 +2,7 @@ package com.jam.ping.api.campingfam.invitation.service;
 
 import com.jam.ping.api.campingfam.invitation.code.InvitationStatus;
 import com.jam.ping.api.campingfam.invitation.domain.CampingFamInvitation;
+import com.jam.ping.api.campingfam.invitation.dto.CampingFamInvitationDto;
 import com.jam.ping.api.campingfam.invitation.repository.CampingFamInvitationRepository;
 import com.jam.ping.api.campingfam.main.domain.CampingFam;
 import com.jam.ping.api.campingfam.main.repository.CampingFamRepository;
@@ -12,6 +13,7 @@ import com.jam.ping.api.notification.code.NotificationType;
 import com.jam.ping.api.notification.service.NotificationService;
 import com.jam.ping.api.user.main.domain.User;
 import com.jam.ping.api.user.main.repository.UserRepository;
+import com.jam.ping.global.email.EmailService;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -34,9 +36,12 @@ public class CampingFamInvitationService {
     private final CampingFamMemberRepository memberRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final EmailService emailService;
 
-    public List<CampingFamInvitation> getInvitations(Long campingFamId) {
-        return invitationRepository.findByCampingFamId(campingFamId);
+    public List<CampingFamInvitationDto> getInvitations(Long campingFamId) {
+        return invitationRepository.findByCampingFamId(campingFamId).stream()
+                .map(CampingFamInvitationDto::from)
+                .toList();
     }
 
     @Transactional
@@ -53,14 +58,9 @@ public class CampingFamInvitationService {
             Optional<User> targetUser = userRepository.findByEmail(email);
             String token = UUID.randomUUID().toString();
 
-            CampingFamInvitation invitation = CampingFamInvitation.builder()
-                    .campingFam(campingFam)
-                    .inviter(inviter)
-                    .email(email)
-                    .invitedUser(targetUser.orElse(null))
-                    .token(token)
-                    .expiredAt(LocalDateTime.now().plusDays(7))
-                    .build();
+            CampingFamInvitation invitation = CampingFamInvitation.create(
+                    campingFam, inviter, email, targetUser.orElse(null), token, LocalDateTime.now().plusDays(7)
+            );
             invitationRepository.save(invitation);
 
             if (targetUser.isPresent()) {
@@ -94,12 +94,7 @@ public class CampingFamInvitationService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 캠핑팸 멤버입니다.");
         }
 
-        memberRepository.save(CampingFamMember.builder()
-                .campingFam(invitation.getCampingFam())
-                .user(user)
-                .role(CampingFamRole.GUEST)
-                .build());
-
+        memberRepository.save(CampingFamMember.create(invitation.getCampingFam(), user, CampingFamRole.GUEST));
         invitation.accept();
     }
 
@@ -125,7 +120,10 @@ public class CampingFamInvitationService {
     }
 
     private void sendInviteEmail(String email, String token, String campingFamName) {
-        // TODO: Spring Mail 연동 후 실제 이메일 발송
-        log.info("[초대 이메일 stub] to={}, campingFam={}, token={}", email, campingFamName, token);
+        try {
+            emailService.sendCampingFamInvitation(email, campingFamName, token);
+        } catch (Exception e) {
+            log.error("[초대 이메일 발송 실패] to={}, error={}", email, e.getMessage());
+        }
     }
 }

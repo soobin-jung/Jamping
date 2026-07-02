@@ -66,14 +66,14 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     );
                     return existingUser;
                 })
-                .orElseGet(() -> userRepository.save(User.builder()
-                        .provider(oauth2UserInfo.provider())
-                        .providerUserId(oauth2UserInfo.providerUserId())
-                        .email(oauth2UserInfo.email())
-                        .nickname(oauth2UserInfo.nickname())
-                        .profileImageUrl(oauth2UserInfo.profileImageUrl())
-                        .role(UserRole.USER)
-                        .build()));
+                .orElseGet(() -> userRepository.save(User.create(
+                        oauth2UserInfo.provider(),
+                        oauth2UserInfo.providerUserId(),
+                        oauth2UserInfo.email(),
+                        oauth2UserInfo.nickname(),
+                        oauth2UserInfo.profileImageUrl(),
+                        UserRole.USER
+                )));
     }
 
     /**

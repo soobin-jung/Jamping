@@ -12,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -45,14 +44,15 @@ public class Gear extends CommonEntity {
     @Column(length = 1000)
     private String memo;
 
-    @Builder
-    private Gear(String name, String link, String imageUrl, Category category, Maker maker, String memo) {
-        this.name = name;
-        this.link = link;
-        this.imageUrl = imageUrl;
-        this.category = category;
-        this.maker = maker;
-        this.memo = memo;
+    public static Gear create(String name, String link, String imageUrl, Category category, Maker maker, String memo) {
+        Gear gear = new Gear();
+        gear.name = name;
+        gear.link = link;
+        gear.imageUrl = imageUrl;
+        gear.category = category;
+        gear.maker = maker;
+        gear.memo = memo;
+        return gear;
     }
 
     public void update(String name, String link, String imageUrl, Category category, Maker maker, String memo) {

@@ -8,6 +8,7 @@ import com.jam.ping.global.security.AuthUtils;
 import com.jam.ping.api.gear.maker.domain.Maker;
 import com.jam.ping.api.gear.maker.repository.MakerRepository;
 import com.jam.ping.api.user.gear.domain.UserGear;
+import com.jam.ping.api.user.gear.dto.UserGearDto;
 import com.jam.ping.api.user.gear.repository.UserGearRepository;
 import com.jam.ping.api.user.main.domain.User;
 import com.jam.ping.api.user.main.repository.UserRepository;
@@ -31,22 +32,22 @@ public class UserGearService {
     private final MakerRepository makerRepository;
     private final GearRepository gearRepository;
 
-    public Page<UserGear> getUserGears(int page, int size) {
+    public Page<UserGearDto> getUserGears(int page, int size) {
         Pageable pageable = PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 50));
-        return userGearRepository.findByUserIdOrderByIdDesc(AuthUtils.getCurrentUserId(), pageable);
+        return userGearRepository.findByUserIdOrderByIdDesc(AuthUtils.getCurrentUserId(), pageable).map(UserGearDto::from);
     }
 
-    public Page<UserGear> getAllUserGearsForAdmin(int page, int size) {
+    public Page<UserGearDto> getAllUserGearsForAdmin(int page, int size) {
         Pageable pageable = PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 50));
-        return userGearRepository.findAllByOrderByIdDesc(pageable);
+        return userGearRepository.findAllByOrderByIdDesc(pageable).map(UserGearDto::from);
     }
 
-    public UserGear getUserGear(Long userGearId) {
-        return findUserGear(userGearId);
+    public UserGearDto getUserGear(Long userGearId) {
+        return UserGearDto.from(findUserGear(userGearId));
     }
 
     @Transactional
-    public UserGear createUserGear(Long categoryId, Long makerId, Long gearId, String name, String memo) {
+    public UserGearDto createUserGear(Long categoryId, Long makerId, Long gearId, String name, String memo) {
         User user = findUser(AuthUtils.getCurrentUserId());
         Category category = findCategory(categoryId);
         Maker maker = makerId == null ? null : findMaker(makerId);
@@ -57,18 +58,11 @@ public class UserGearService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "기어를 선택하지 않은 경우 장비명은 필수입니다.");
         }
 
-        return userGearRepository.save(UserGear.builder()
-                .user(user)
-                .category(category)
-                .maker(maker)
-                .gear(gear)
-                .name(resolvedName)
-                .memo(memo)
-                .build());
+        return UserGearDto.from(userGearRepository.save(UserGear.create(user, category, maker, gear, resolvedName, memo)));
     }
 
     @Transactional
-    public UserGear updateUserGear(Long userGearId, Long categoryId, Long makerId, Long gearId, String name, String memo) {
+    public UserGearDto updateUserGear(Long userGearId, Long categoryId, Long makerId, Long gearId, String name, String memo) {
         UserGear userGear = findUserGear(userGearId);
         checkOwnership(userGear);
 
@@ -82,7 +76,7 @@ public class UserGearService {
         }
 
         userGear.update(category, maker, gear, resolvedName, memo);
-        return userGear;
+        return UserGearDto.from(userGear);
     }
 
     @Transactional

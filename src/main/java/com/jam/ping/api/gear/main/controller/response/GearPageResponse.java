@@ -1,6 +1,6 @@
 package com.jam.ping.api.gear.main.controller.response;
 
-import com.jam.ping.api.gear.main.domain.Gear;
+import com.jam.ping.api.gear.main.dto.GearDto;
 import java.util.List;
 import org.springframework.data.domain.Page;
 
@@ -17,10 +17,7 @@ public record GearPageResponse(
         String keyword
 ) {
 
-    /**
-     * Page<Gear>를 관리자 목록 응답 형식으로 변환합니다.
-     */
-    public static GearPageResponse from(Page<Gear> gearPage, Long categoryId, Long makerId, String keyword) {
+    public static GearPageResponse from(Page<GearDto> gearPage, Long categoryId, Long makerId, String keyword) {
         return new GearPageResponse(
                 gearPage.getContent().stream()
                         .map(GearResponse::from)

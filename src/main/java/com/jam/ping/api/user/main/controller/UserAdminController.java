@@ -6,7 +6,7 @@ import com.jam.ping.api.user.main.controller.request.UserRoleUpdateRequest;
 import com.jam.ping.api.user.main.controller.request.UserSearchRequest;
 import com.jam.ping.api.user.main.controller.response.UserPageResponse;
 import com.jam.ping.api.user.main.controller.response.UserResponse;
-import com.jam.ping.api.user.main.domain.User;
+import com.jam.ping.api.user.main.dto.UserDto;
 import com.jam.ping.api.user.main.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,11 +47,11 @@ public class UserAdminController {
             @PathVariable Long userId,
             @Valid @RequestBody UserRoleUpdateRequest request
     ) {
-        User user = userService.updateUserRole(userId, request.role());
+        UserDto user = userService.updateUserRole(userId, request.role());
 
         return new ApiRes<UserResponse>()
                 .successData(UserResponse.from(user))
-                .manipulationOne(user.getId())
+                .manipulationOne(user.id())
                 .responseMsg("사용자 권한이 변경되었습니다.");
     }
 }

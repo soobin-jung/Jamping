@@ -12,7 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalTime;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -45,21 +44,15 @@ public class CampSite extends CommonEntity {
     @Column(nullable = false)
     private LocalTime checkOutTime;
 
-    @Builder
-    private CampSite(
-            String name,
-            String link,
-            RegionCode regionCode,
-            DistrictCode districtCode,
-            LocalTime checkInTime,
-            LocalTime checkOutTime
-    ) {
-        this.name = name;
-        this.link = link;
-        this.regionCode = regionCode;
-        this.districtCode = districtCode;
-        this.checkInTime = checkInTime;
-        this.checkOutTime = checkOutTime;
+    public static CampSite create(String name, String link, RegionCode regionCode, DistrictCode districtCode, LocalTime checkInTime, LocalTime checkOutTime) {
+        CampSite campSite = new CampSite();
+        campSite.name = name;
+        campSite.link = link;
+        campSite.regionCode = regionCode;
+        campSite.districtCode = districtCode;
+        campSite.checkInTime = checkInTime;
+        campSite.checkOutTime = checkOutTime;
+        return campSite;
     }
 
     public void update(

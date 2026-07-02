@@ -2,7 +2,7 @@ package com.jam.ping.api.campingfam.main.controller;
 
 import com.jam.ping.api.campingfam.main.controller.request.CampingFamRequest;
 import com.jam.ping.api.campingfam.main.controller.response.CampingFamResponse;
-import com.jam.ping.api.campingfam.main.domain.CampingFam;
+import com.jam.ping.api.campingfam.main.dto.CampingFamDto;
 import com.jam.ping.api.campingfam.main.service.CampingFamService;
 import com.jam.ping.api.campingfam.schedule.controller.request.CampingFamFinalizeScheduleRequest;
 import com.jam.ping.global.response.ApiRes;
@@ -36,7 +36,7 @@ public class CampingFamController {
     public ResponseEntity<ApiRes<CampingFamResponse>> createCampingFam(
             @Valid @RequestBody CampingFamRequest request
     ) {
-        CampingFam campingFam = campingFamService.createCampingFam(
+        CampingFamDto campingFamDto = campingFamService.createCampingFam(
                 request.name(),
                 request.campSiteId(),
                 request.reservationSites()
@@ -44,8 +44,8 @@ public class CampingFamController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiRes<CampingFamResponse>()
-                        .successData(CampingFamResponse.from(campingFam))
-                        .manipulationOne(campingFam.getId())
+                        .successData(CampingFamResponse.from(campingFamDto))
+                        .manipulationOne(campingFamDto.id())
                         .responseMsg("캠핑팸이 생성되었습니다."));
     }
 
@@ -54,14 +54,14 @@ public class CampingFamController {
             @PathVariable Long id,
             @Valid @RequestBody CampingFamFinalizeScheduleRequest request
     ) {
-        CampingFam campingFam = campingFamService.finalizeSchedule(
+        CampingFamDto campingFamDto = campingFamService.finalizeSchedule(
                 id,
                 request.campingStartDate(),
                 request.campingEndDate()
         );
         return new ApiRes<CampingFamResponse>()
-                .successData(CampingFamResponse.from(campingFam))
-                .manipulationOne(campingFam.getId())
+                .successData(CampingFamResponse.from(campingFamDto))
+                .manipulationOne(campingFamDto.id())
                 .responseMsg("일정이 확정되었습니다.");
     }
 

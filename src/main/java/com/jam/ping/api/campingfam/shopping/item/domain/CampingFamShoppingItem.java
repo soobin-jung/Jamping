@@ -11,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -40,12 +39,13 @@ public class CampingFamShoppingItem extends CommonEntity {
     @Column(length = 200)
     private String memo;
 
-    @Builder
-    private CampingFamShoppingItem(CampingFamShoppingCategory category, String name, String quantity, String memo) {
-        this.category = category;
-        this.name = name;
-        this.quantity = quantity;
-        this.memo = memo;
+    public static CampingFamShoppingItem create(CampingFamShoppingCategory category, String name, String quantity, String memo) {
+        CampingFamShoppingItem item = new CampingFamShoppingItem();
+        item.category = category;
+        item.name = name;
+        item.quantity = quantity;
+        item.memo = memo;
+        return item;
     }
 
     public void update(String name, String quantity, String memo) {

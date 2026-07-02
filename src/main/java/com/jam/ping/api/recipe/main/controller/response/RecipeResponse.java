@@ -1,6 +1,6 @@
 package com.jam.ping.api.recipe.main.controller.response;
 
-import com.jam.ping.api.recipe.main.domain.Recipe;
+import com.jam.ping.api.recipe.main.dto.RecipeDto;
 import java.time.LocalDateTime;
 
 public record RecipeResponse(
@@ -16,18 +16,18 @@ public record RecipeResponse(
         LocalDateTime updatedAt
 ) {
 
-    public static RecipeResponse from(Recipe recipe) {
+    public static RecipeResponse from(RecipeDto dto) {
         return new RecipeResponse(
-                recipe.getId(),
-                recipe.getName(),
-                recipe.getIngredients(),
-                recipe.getInstructions(),
-                recipe.getRecipeCategory().getId(),
-                recipe.getRecipeCategory().getName(),
-                recipe.getCreatedById(),
-                recipe.getCreatedAt(),
-                recipe.getUpdatedById(),
-                recipe.getUpdatedAt()
+                dto.id(),
+                dto.name(),
+                dto.ingredients(),
+                dto.instructions(),
+                dto.recipeCategoryId(),
+                dto.recipeCategoryName(),
+                dto.createdById(),
+                dto.createdAt(),
+                dto.updatedById(),
+                dto.updatedAt()
         );
     }
 }

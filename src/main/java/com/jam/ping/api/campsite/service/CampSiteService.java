@@ -1,6 +1,7 @@
 package com.jam.ping.api.campsite.service;
 
 import com.jam.ping.api.campsite.domain.CampSite;
+import com.jam.ping.api.campsite.dto.CampSiteDto;
 import com.jam.ping.api.campsite.repository.CampSiteRepository;
 import com.jam.ping.api.regeion.district.code.DistrictCode;
 import com.jam.ping.api.regeion.region.code.RegionCode;
@@ -22,7 +23,7 @@ public class CampSiteService {
 
     private final CampSiteRepository campSiteRepository;
 
-    public Page<CampSite> getCampSites(String keyword, RegionCode regionCode, DistrictCode districtCode, int page, int size) {
+    public Page<CampSiteDto> getCampSites(String keyword, RegionCode regionCode, DistrictCode districtCode, int page, int size) {
         Pageable pageable = PageRequest.of(
                 Math.max(page, 0),
                 Math.min(Math.max(size, 1), 50),
@@ -33,27 +34,27 @@ public class CampSiteService {
 
         if (districtCode != null) {
             return kw.isBlank()
-                    ? campSiteRepository.findByDistrictCodeOrderByIdDesc(districtCode, pageable)
-                    : campSiteRepository.findByDistrictCodeAndNameContainingIgnoreCaseOrderByIdDesc(districtCode, kw, pageable);
+                    ? campSiteRepository.findByDistrictCodeOrderByIdDesc(districtCode, pageable).map(CampSiteDto::from)
+                    : campSiteRepository.findByDistrictCodeAndNameContainingIgnoreCaseOrderByIdDesc(districtCode, kw, pageable).map(CampSiteDto::from);
         }
 
         if (regionCode != null) {
             return kw.isBlank()
-                    ? campSiteRepository.findByRegionCodeOrderByIdDesc(regionCode, pageable)
-                    : campSiteRepository.findByRegionCodeAndNameContainingIgnoreCaseOrderByIdDesc(regionCode, kw, pageable);
+                    ? campSiteRepository.findByRegionCodeOrderByIdDesc(regionCode, pageable).map(CampSiteDto::from)
+                    : campSiteRepository.findByRegionCodeAndNameContainingIgnoreCaseOrderByIdDesc(regionCode, kw, pageable).map(CampSiteDto::from);
         }
 
         return kw.isBlank()
-                ? campSiteRepository.findAllByOrderByIdDesc(pageable)
-                : campSiteRepository.findByNameContainingIgnoreCaseOrderByIdDesc(kw, pageable);
+                ? campSiteRepository.findAllByOrderByIdDesc(pageable).map(CampSiteDto::from)
+                : campSiteRepository.findByNameContainingIgnoreCaseOrderByIdDesc(kw, pageable).map(CampSiteDto::from);
     }
 
-    public CampSite getCampSite(Long campSiteId) {
-        return findCampSite(campSiteId);
+    public CampSiteDto getCampSite(Long campSiteId) {
+        return CampSiteDto.from(findCampSite(campSiteId));
     }
 
     @Transactional
-    public CampSite createCampSite(
+    public CampSiteDto createCampSite(
             String name,
             String link,
             RegionCode regionCode,
@@ -65,20 +66,13 @@ public class CampSiteService {
         validateDuplicate(normalizedName, null);
         validateLocation(regionCode, districtCode);
 
-        CampSite campSite = CampSite.builder()
-                .name(normalizedName)
-                .link(normalizeLink(link))
-                .regionCode(regionCode)
-                .districtCode(districtCode)
-                .checkInTime(checkInTime)
-                .checkOutTime(checkOutTime)
-                .build();
+        CampSite campSite = CampSite.create(normalizedName, normalizeLink(link), regionCode, districtCode, checkInTime, checkOutTime);
 
-        return campSiteRepository.save(campSite);
+        return CampSiteDto.from(campSiteRepository.save(campSite));
     }
 
     @Transactional
-    public CampSite updateCampSite(
+    public CampSiteDto updateCampSite(
             Long campSiteId,
             String name,
             String link,
@@ -92,15 +86,8 @@ public class CampSiteService {
         validateDuplicate(normalizedName, campSiteId);
         validateLocation(regionCode, districtCode);
 
-        campSite.update(
-                normalizedName,
-                normalizeLink(link),
-                regionCode,
-                districtCode,
-                checkInTime,
-                checkOutTime
-        );
-        return campSite;
+        campSite.update(normalizedName, normalizeLink(link), regionCode, districtCode, checkInTime, checkOutTime);
+        return CampSiteDto.from(campSite);
     }
 
     @Transactional

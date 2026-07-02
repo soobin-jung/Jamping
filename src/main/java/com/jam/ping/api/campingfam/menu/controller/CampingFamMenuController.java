@@ -2,7 +2,7 @@ package com.jam.ping.api.campingfam.menu.controller;
 
 import com.jam.ping.api.campingfam.menu.controller.request.CampingFamMenuUpdateRequest;
 import com.jam.ping.api.campingfam.menu.controller.response.CampingFamMenuResponse;
-import com.jam.ping.api.campingfam.menu.domain.CampingFamMenu;
+import com.jam.ping.api.campingfam.menu.dto.CampingFamMenuDto;
 import com.jam.ping.api.campingfam.menu.service.CampingFamMenuService;
 import com.jam.ping.global.response.ApiRes;
 import jakarta.validation.Valid;
@@ -37,10 +37,10 @@ public class CampingFamMenuController {
             @PathVariable Long menuId,
             @Valid @RequestBody CampingFamMenuUpdateRequest request
     ) {
-        CampingFamMenu menu = campingFamMenuService.updateMenu(campingFamId, menuId, request.menu());
+        CampingFamMenuDto menu = campingFamMenuService.updateMenu(campingFamId, menuId, request.menu());
         return new ApiRes<CampingFamMenuResponse>()
                 .successData(CampingFamMenuResponse.from(menu))
-                .manipulationOne(menu.getId())
+                .manipulationOne(menu.id())
                 .responseMsg("식단이 수정되었습니다.");
     }
 }

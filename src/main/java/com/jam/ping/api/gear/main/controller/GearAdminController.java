@@ -4,7 +4,7 @@ import com.jam.ping.api.gear.main.controller.request.GearRequest;
 import com.jam.ping.api.gear.main.controller.request.GearSearchRequest;
 import com.jam.ping.api.gear.main.controller.response.GearPageResponse;
 import com.jam.ping.api.gear.main.controller.response.GearResponse;
-import com.jam.ping.api.gear.main.domain.Gear;
+import com.jam.ping.api.gear.main.dto.GearDto;
 import com.jam.ping.api.gear.main.service.GearService;
 import com.jam.ping.global.response.ApiRes;
 import com.jam.ping.global.security.AdminOnly;
@@ -51,7 +51,7 @@ public class GearAdminController {
     public ResponseEntity<ApiRes<GearResponse>> createGear(
             @Valid @RequestBody GearRequest request
     ) {
-        Gear gear = gearService.createGear(
+        GearDto gear = gearService.createGear(
                 request.name(),
                 request.link(),
                 request.imageUrl(),
@@ -63,7 +63,7 @@ public class GearAdminController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiRes<GearResponse>()
                         .successData(GearResponse.from(gear))
-                        .manipulationOne(gear.getId())
+                        .manipulationOne(gear.id())
                         .responseMsg("용품이 등록되었습니다."));
     }
 
@@ -72,7 +72,7 @@ public class GearAdminController {
             @PathVariable Long gearId,
             @Valid @RequestBody GearRequest request
     ) {
-        Gear gear = gearService.updateGear(
+        GearDto gear = gearService.updateGear(
                 gearId,
                 request.name(),
                 request.link(),
@@ -84,7 +84,7 @@ public class GearAdminController {
 
         return new ApiRes<GearResponse>()
                 .successData(GearResponse.from(gear))
-                .manipulationOne(gear.getId())
+                .manipulationOne(gear.id())
                 .responseMsg("용품이 수정되었습니다.");
     }
 

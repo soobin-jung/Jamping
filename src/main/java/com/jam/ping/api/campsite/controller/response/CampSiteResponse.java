@@ -1,7 +1,7 @@
 package com.jam.ping.api.campsite.controller.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.jam.ping.api.campsite.domain.CampSite;
+import com.jam.ping.api.campsite.dto.CampSiteDto;
 import com.jam.ping.api.regeion.district.code.DistrictCode;
 import com.jam.ping.api.regeion.region.code.RegionCode;
 import java.time.LocalTime;
@@ -18,15 +18,11 @@ public record CampSiteResponse(
         LocalTime checkOutTime
 ) {
 
-    public static CampSiteResponse from(CampSite campSite) {
+    public static CampSiteResponse from(CampSiteDto dto) {
         return new CampSiteResponse(
-                campSite.getId(),
-                campSite.getName(),
-                campSite.getLink(),
-                campSite.getRegionCode(),
-                campSite.getDistrictCode(),
-                campSite.getCheckInTime(),
-                campSite.getCheckOutTime()
+                dto.id(), dto.name(), dto.link(),
+                dto.regionCode(), dto.districtCode(),
+                dto.checkInTime(), dto.checkOutTime()
         );
     }
 }

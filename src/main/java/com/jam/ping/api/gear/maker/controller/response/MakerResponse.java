@@ -1,6 +1,6 @@
 package com.jam.ping.api.gear.maker.controller.response;
 
-import com.jam.ping.api.gear.maker.domain.Maker;
+import com.jam.ping.api.gear.maker.dto.MakerDto;
 import java.time.LocalDateTime;
 
 public record MakerResponse(
@@ -14,19 +14,16 @@ public record MakerResponse(
         LocalDateTime updatedAt
 ) {
 
-    /**
-     * Maker 엔티티를 관리자 응답 형식으로 변환합니다.
-     */
-    public static MakerResponse from(Maker maker) {
+    public static MakerResponse from(MakerDto dto) {
         return new MakerResponse(
-                maker.getId(),
-                maker.getName(),
-                maker.getNameEng(),
-                maker.getHomepageUrl(),
-                maker.getCreatedAt(),
-                maker.getCreatedById(),
-                maker.getUpdatedById(),
-                maker.getUpdatedAt()
+                dto.id(),
+                dto.name(),
+                dto.nameEng(),
+                dto.homepageUrl(),
+                dto.createdAt(),
+                dto.createdById(),
+                dto.updatedById(),
+                dto.updatedAt()
         );
     }
 }

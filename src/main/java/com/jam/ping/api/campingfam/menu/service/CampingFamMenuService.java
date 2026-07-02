@@ -1,8 +1,9 @@
 package com.jam.ping.api.campingfam.menu.service;
 
 import com.jam.ping.api.campingfam.main.domain.CampingFam;
-import com.jam.ping.api.campingfam.menu.domain.CampingFamMenu;
 import com.jam.ping.api.campingfam.menu.code.MealType;
+import com.jam.ping.api.campingfam.menu.domain.CampingFamMenu;
+import com.jam.ping.api.campingfam.menu.dto.CampingFamMenuDto;
 import com.jam.ping.api.campingfam.menu.repository.CampingFamMenuRepository;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -24,21 +25,19 @@ public class CampingFamMenuService {
     public void initMenus(CampingFam campingFam, LocalDate startDate, LocalDate endDate) {
         List<CampingFamMenu> menus = startDate.datesUntil(endDate.plusDays(1))
                 .flatMap(date -> Arrays.stream(MealType.values())
-                        .map(mealType -> CampingFamMenu.builder()
-                                .campingFam(campingFam)
-                                .campingDate(date)
-                                .mealType(mealType)
-                                .build()))
+                    .map(mealType -> CampingFamMenu.create(campingFam, date, mealType)))
                 .toList();
         campingFamMenuRepository.saveAll(menus);
     }
 
-    public List<CampingFamMenu> getMenus(Long campingFamId) {
-        return campingFamMenuRepository.findByCampingFamIdOrderByCampingDateAsc(campingFamId);
+    public List<CampingFamMenuDto> getMenus(Long campingFamId) {
+        return campingFamMenuRepository.findByCampingFamIdOrderByCampingDateAsc(campingFamId).stream()
+                .map(CampingFamMenuDto::from)
+                .toList();
     }
 
     @Transactional
-    public CampingFamMenu updateMenu(Long campingFamId, Long menuId, String menu) {
+    public CampingFamMenuDto updateMenu(Long campingFamId, Long menuId, String menu) {
         CampingFamMenu campingFamMenu = campingFamMenuRepository.findById(menuId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "메뉴를 찾을 수 없습니다."));
 
@@ -47,7 +46,7 @@ public class CampingFamMenuService {
         }
 
         campingFamMenu.update(menu);
-        return campingFamMenu;
+        return CampingFamMenuDto.from(campingFamMenu);
     }
 
     @Transactional

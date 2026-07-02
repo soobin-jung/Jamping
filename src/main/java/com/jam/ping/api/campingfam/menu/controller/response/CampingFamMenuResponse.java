@@ -1,7 +1,7 @@
 package com.jam.ping.api.campingfam.menu.controller.response;
 
-import com.jam.ping.api.campingfam.menu.domain.CampingFamMenu;
 import com.jam.ping.api.campingfam.menu.code.MealType;
+import com.jam.ping.api.campingfam.menu.dto.CampingFamMenuDto;
 import java.time.LocalDate;
 
 public record CampingFamMenuResponse(
@@ -13,14 +13,14 @@ public record CampingFamMenuResponse(
         String menu
 ) {
 
-    public static CampingFamMenuResponse from(CampingFamMenu campingFamMenu) {
+    public static CampingFamMenuResponse from(CampingFamMenuDto dto) {
         return new CampingFamMenuResponse(
-                campingFamMenu.getId(),
-                campingFamMenu.getCampingFam().getId(),
-                campingFamMenu.getCampingDate(),
-                campingFamMenu.getMealType(),
-                campingFamMenu.getMealType().getLabel(),
-                campingFamMenu.getMenu()
+                dto.id(),
+                dto.campingFamId(),
+                dto.campingDate(),
+                dto.mealType(),
+                dto.mealTypeLabel(),
+                dto.menu()
         );
     }
 }

@@ -1,6 +1,6 @@
 package com.jam.ping.api.recipe.category.controller.response;
 
-import com.jam.ping.api.recipe.category.domain.RecipeCategory;
+import com.jam.ping.api.recipe.category.dto.RecipeCategoryDto;
 import java.util.List;
 import org.springframework.data.domain.Page;
 
@@ -15,7 +15,7 @@ public record RecipeCategoryPageResponse(
         String keyword
 ) {
 
-    public static RecipeCategoryPageResponse from(Page<RecipeCategory> page, String keyword) {
+    public static RecipeCategoryPageResponse from(Page<RecipeCategoryDto> page, String keyword) {
         return new RecipeCategoryPageResponse(
                 page.getContent().stream().map(RecipeCategoryResponse::from).toList(),
                 page.getNumber(),

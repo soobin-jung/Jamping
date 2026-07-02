@@ -7,7 +7,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,11 +28,12 @@ public class Maker extends CommonEntity {
     @Column(length = 500)
     private String homepageUrl;
 
-    @Builder
-    private Maker(String name, String nameEng, String homepageUrl) {
-        this.name = name;
-        this.nameEng = nameEng;
-        this.homepageUrl = homepageUrl;
+    public static Maker create(String name, String nameEng, String homepageUrl) {
+        Maker maker = new Maker();
+        maker.name = name;
+        maker.nameEng = nameEng;
+        maker.homepageUrl = homepageUrl;
+        return maker;
     }
 
     public void update(String name, String nameEng, String homepageUrl) {

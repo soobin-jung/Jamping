@@ -3,7 +3,7 @@ package com.jam.ping.api.gear.category.controller;
 import com.jam.ping.api.gear.category.controller.request.CategoryRequest;
 import com.jam.ping.api.gear.category.controller.response.CategoryPageResponse;
 import com.jam.ping.api.gear.category.controller.response.CategoryResponse;
-import com.jam.ping.api.gear.category.domain.Category;
+import com.jam.ping.api.gear.category.dto.CategoryDto;
 import com.jam.ping.api.gear.category.service.CategoryService;
 import com.jam.ping.global.request.KeywordPageRequest;
 import com.jam.ping.global.response.ApiRes;
@@ -49,7 +49,7 @@ public class CategoryAdminController {
     public ResponseEntity<ApiRes<CategoryResponse>> createCategory(
             @Valid @RequestBody CategoryRequest request
     ) {
-        Category category = categoryService.createCategory(
+        CategoryDto category = categoryService.createCategory(
                 request.name(),
                 request.memo()
         );
@@ -57,7 +57,7 @@ public class CategoryAdminController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiRes<CategoryResponse>()
                         .successData(CategoryResponse.from(category))
-                        .manipulationOne(category.getId())
+                        .manipulationOne(category.id())
                         .responseMsg("카테고리가 등록되었습니다."));
     }
 
@@ -66,7 +66,7 @@ public class CategoryAdminController {
             @PathVariable Long categoryId,
             @Valid @RequestBody CategoryRequest request
     ) {
-        Category category = categoryService.updateCategory(
+        CategoryDto category = categoryService.updateCategory(
                 categoryId,
                 request.name(),
                 request.memo()
@@ -74,7 +74,7 @@ public class CategoryAdminController {
 
         return new ApiRes<CategoryResponse>()
                 .successData(CategoryResponse.from(category))
-                .manipulationOne(category.getId())
+                .manipulationOne(category.id())
                 .responseMsg("카테고리가 수정되었습니다.");
     }
 

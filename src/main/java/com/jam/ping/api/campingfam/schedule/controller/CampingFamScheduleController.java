@@ -2,7 +2,7 @@ package com.jam.ping.api.campingfam.schedule.controller;
 
 import com.jam.ping.api.campingfam.schedule.controller.request.CampingFamScheduleTempRequest;
 import com.jam.ping.api.campingfam.schedule.controller.response.CampingFamScheduleTempResponse;
-import com.jam.ping.api.campingfam.schedule.domain.CampingFamScheduleTemp;
+import com.jam.ping.api.campingfam.schedule.dto.CampingFamScheduleTempDto;
 import com.jam.ping.api.campingfam.schedule.service.CampingFamScheduleTempService;
 import com.jam.ping.global.response.ApiRes;
 import com.jam.ping.global.security.AuthUtils;
@@ -32,7 +32,7 @@ public class CampingFamScheduleController {
             @Valid @RequestBody CampingFamScheduleTempRequest request
     ) {
         Long userId = AuthUtils.getCurrentUserId();
-        List<CampingFamScheduleTemp> temps = campingFamScheduleTempService.submitDates(
+        List<CampingFamScheduleTempDto> temps = campingFamScheduleTempService.submitDates(
                 campingFamId, userId, request.dates()
         );
         List<CampingFamScheduleTempResponse> responses = temps.stream()

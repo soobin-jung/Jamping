@@ -1,6 +1,6 @@
 package com.jam.ping.api.recipe.main.controller.response;
 
-import com.jam.ping.api.recipe.main.domain.Recipe;
+import com.jam.ping.api.recipe.main.dto.RecipeDto;
 import java.util.List;
 import org.springframework.data.domain.Page;
 
@@ -16,7 +16,7 @@ public record RecipePageResponse(
         String keyword
 ) {
 
-    public static RecipePageResponse from(Page<Recipe> recipePage, Long recipeCategoryId, String keyword) {
+    public static RecipePageResponse from(Page<RecipeDto> recipePage, Long recipeCategoryId, String keyword) {
         return new RecipePageResponse(
                 recipePage.getContent().stream().map(RecipeResponse::from).toList(),
                 recipePage.getNumber(),

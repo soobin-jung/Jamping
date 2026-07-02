@@ -1,7 +1,7 @@
 package com.jam.ping.api.user.main.controller.response;
 
 import com.jam.ping.api.user.main.code.UserRole;
-import com.jam.ping.api.user.main.domain.User;
+import com.jam.ping.api.user.main.dto.UserDto;
 import java.util.List;
 import org.springframework.data.domain.Page;
 
@@ -17,10 +17,7 @@ public record UserPageResponse(
         String role
 ) {
 
-    /**
-     * Page<User>를 관리자 사용자 목록 응답 형식으로 변환합니다.
-     */
-    public static UserPageResponse from(Page<User> userPage, String keyword, UserRole role) {
+    public static UserPageResponse from(Page<UserDto> userPage, String keyword, UserRole role) {
         return new UserPageResponse(
                 userPage.getContent().stream()
                         .map(UserListItemResponse::from)

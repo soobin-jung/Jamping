@@ -6,7 +6,7 @@ import com.jam.ping.api.recipe.main.controller.request.RecipeRequest;
 import com.jam.ping.api.recipe.main.controller.request.RecipeSearchRequest;
 import com.jam.ping.api.recipe.main.controller.response.RecipePageResponse;
 import com.jam.ping.api.recipe.main.controller.response.RecipeResponse;
-import com.jam.ping.api.recipe.main.domain.Recipe;
+import com.jam.ping.api.recipe.main.dto.RecipeDto;
 import com.jam.ping.api.recipe.main.service.RecipeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +50,7 @@ public class RecipeAdminController {
     public ResponseEntity<ApiRes<RecipeResponse>> createRecipe(
             @Valid @RequestBody RecipeRequest request
     ) {
-        Recipe recipe = recipeService.createRecipe(
+        RecipeDto recipe = recipeService.createRecipe(
                 request.name(),
                 request.ingredients(),
                 request.instructions(),
@@ -60,7 +60,7 @@ public class RecipeAdminController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiRes<RecipeResponse>()
                         .successData(RecipeResponse.from(recipe))
-                        .manipulationOne(recipe.getId())
+                        .manipulationOne(recipe.id())
                         .responseMsg("레시피가 등록되었습니다."));
     }
 
@@ -69,7 +69,7 @@ public class RecipeAdminController {
             @PathVariable Long id,
             @Valid @RequestBody RecipeRequest request
     ) {
-        Recipe recipe = recipeService.updateRecipe(
+        RecipeDto recipe = recipeService.updateRecipe(
                 id,
                 request.name(),
                 request.ingredients(),
@@ -79,7 +79,7 @@ public class RecipeAdminController {
 
         return new ApiRes<RecipeResponse>()
                 .successData(RecipeResponse.from(recipe))
-                .manipulationOne(recipe.getId())
+                .manipulationOne(recipe.id())
                 .responseMsg("레시피가 수정되었습니다.");
     }
 

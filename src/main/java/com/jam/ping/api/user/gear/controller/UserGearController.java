@@ -5,7 +5,7 @@ import com.jam.ping.global.response.ApiRes;
 import com.jam.ping.api.user.gear.controller.request.UserGearRequest;
 import com.jam.ping.api.user.gear.controller.response.UserGearPageResponse;
 import com.jam.ping.api.user.gear.controller.response.UserGearResponse;
-import com.jam.ping.api.user.gear.domain.UserGear;
+import com.jam.ping.api.user.gear.dto.UserGearDto;
 import com.jam.ping.api.user.gear.service.UserGearService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ public class UserGearController {
 
     @PostMapping
     public ResponseEntity<ApiRes<UserGearResponse>> createUserGear(@Valid @RequestBody UserGearRequest request) {
-        UserGear userGear = userGearService.createUserGear(
+        UserGearDto userGear = userGearService.createUserGear(
                 request.categoryId(),
                 request.makerId(),
                 request.gearId(),
@@ -47,7 +47,7 @@ public class UserGearController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiRes<UserGearResponse>()
                         .successData(UserGearResponse.from(userGear))
-                        .manipulationOne(userGear.getId())
+                        .manipulationOne(userGear.id())
                         .responseMsg("장비가 등록되었습니다."));
     }
 
@@ -56,7 +56,7 @@ public class UserGearController {
             @PathVariable Long userGearId,
             @Valid @RequestBody UserGearRequest request
     ) {
-        UserGear userGear = userGearService.updateUserGear(
+        UserGearDto userGear = userGearService.updateUserGear(
                 userGearId,
                 request.categoryId(),
                 request.makerId(),
@@ -67,7 +67,7 @@ public class UserGearController {
 
         return new ApiRes<UserGearResponse>()
                 .successData(UserGearResponse.from(userGear))
-                .manipulationOne(userGear.getId())
+                .manipulationOne(userGear.id())
                 .responseMsg("장비가 수정되었습니다.");
     }
 

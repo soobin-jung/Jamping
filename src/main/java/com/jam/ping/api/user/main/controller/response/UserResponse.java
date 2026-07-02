@@ -1,6 +1,6 @@
 package com.jam.ping.api.user.main.controller.response;
 
-import com.jam.ping.api.user.main.domain.User;
+import com.jam.ping.api.user.main.dto.UserDto;
 import java.time.LocalDateTime;
 
 public record UserResponse(
@@ -15,20 +15,17 @@ public record UserResponse(
         LocalDateTime updatedAt
 ) {
 
-    /**
-     * User 엔티티를 관리자 상세 응답 형식으로 변환합니다.
-     */
-    public static UserResponse from(User user) {
+    public static UserResponse from(UserDto dto) {
         return new UserResponse(
-                user.getId(),
-                user.getProvider().name(),
-                user.getProviderUserId(),
-                user.getEmail(),
-                user.getNickname(),
-                user.getProfileImageUrl(),
-                user.getRole().name(),
-                user.getCreatedAt(),
-                user.getUpdatedAt()
+                dto.id(),
+                dto.provider(),
+                dto.providerUserId(),
+                dto.email(),
+                dto.nickname(),
+                dto.profileImageUrl(),
+                dto.role(),
+                dto.createdAt(),
+                dto.updatedAt()
         );
     }
 }

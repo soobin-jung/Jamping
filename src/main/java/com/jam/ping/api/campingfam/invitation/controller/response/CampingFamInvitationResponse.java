@@ -1,7 +1,7 @@
 package com.jam.ping.api.campingfam.invitation.controller.response;
 
 import com.jam.ping.api.campingfam.invitation.code.InvitationStatus;
-import com.jam.ping.api.campingfam.invitation.domain.CampingFamInvitation;
+import com.jam.ping.api.campingfam.invitation.dto.CampingFamInvitationDto;
 import java.time.LocalDateTime;
 
 public record CampingFamInvitationResponse(
@@ -14,15 +14,15 @@ public record CampingFamInvitationResponse(
         LocalDateTime createdAt
 ) {
 
-    public static CampingFamInvitationResponse from(CampingFamInvitation invitation) {
+    public static CampingFamInvitationResponse from(CampingFamInvitationDto dto) {
         return new CampingFamInvitationResponse(
-                invitation.getId(),
-                invitation.getCampingFam().getId(),
-                invitation.getEmail(),
-                invitation.getStatus(),
-                invitation.getToken(),
-                invitation.getExpiredAt(),
-                invitation.getCreatedAt()
+                dto.id(),
+                dto.campingFamId(),
+                dto.email(),
+                dto.status(),
+                dto.token(),
+                dto.expiredAt(),
+                dto.createdAt()
         );
     }
 }

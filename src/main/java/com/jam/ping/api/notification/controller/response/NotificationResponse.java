@@ -1,7 +1,7 @@
 package com.jam.ping.api.notification.controller.response;
 
 import com.jam.ping.api.notification.code.NotificationType;
-import com.jam.ping.api.notification.domain.Notification;
+import com.jam.ping.api.notification.dto.NotificationDto;
 import java.time.LocalDateTime;
 
 public record NotificationResponse(
@@ -13,14 +13,14 @@ public record NotificationResponse(
         LocalDateTime createdAt
 ) {
 
-    public static NotificationResponse from(Notification notification) {
+    public static NotificationResponse from(NotificationDto dto) {
         return new NotificationResponse(
-                notification.getId(),
-                notification.getType(),
-                notification.getMessage(),
-                notification.getReferenceId(),
-                notification.isRead(),
-                notification.getCreatedAt()
+                dto.id(),
+                dto.type(),
+                dto.message(),
+                dto.referenceId(),
+                dto.isRead(),
+                dto.createdAt()
         );
     }
 }
