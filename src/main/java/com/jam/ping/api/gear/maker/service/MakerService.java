@@ -3,15 +3,15 @@ package com.jam.ping.api.gear.maker.service;
 import com.jam.ping.api.gear.maker.domain.Maker;
 import com.jam.ping.api.gear.maker.dto.MakerDto;
 import com.jam.ping.api.gear.maker.repository.MakerRepository;
+import com.jam.ping.global.exception.ConflictException;
+import com.jam.ping.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -65,7 +65,7 @@ public class MakerService {
 
     private Maker findMaker(Long makerId) {
         return makerRepository.findById(makerId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "메이커를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("메이커를 찾을 수 없습니다."));
     }
 
     private void validateDuplicate(String name, String nameEng, Long makerId) {
@@ -77,7 +77,7 @@ public class MakerService {
                 : makerRepository.existsByNameIgnoreCaseAndIdNot(normalizedName, makerId);
 
         if (duplicatedName) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 등록된 메이커명입니다.");
+            throw new ConflictException("이미 등록된 메이커명입니다.");
         }
 
         if (normalizedNameEng.isBlank()) {
@@ -89,7 +89,7 @@ public class MakerService {
                 : makerRepository.existsByNameEngIgnoreCaseAndIdNot(normalizedNameEng, makerId);
 
         if (duplicatedNameEng) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 등록된 영문 메이커명입니다.");
+            throw new ConflictException("이미 등록된 영문 메이커명입니다.");
         }
     }
 }

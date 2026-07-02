@@ -12,13 +12,13 @@ import com.jam.ping.api.campsite.domain.CampSite;
 import com.jam.ping.api.campsite.repository.CampSiteRepository;
 import com.jam.ping.api.user.main.domain.User;
 import com.jam.ping.api.user.main.repository.UserRepository;
+import com.jam.ping.global.exception.BadRequestException;
+import com.jam.ping.global.exception.NotFoundException;
 import com.jam.ping.global.security.AuthUtils;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +40,7 @@ public class CampingFamService {
     public CampingFamDto createCampingFam(String name, Long campSiteId, String reservationSites) {
         CampSite campSite = findCampSite(campSiteId);
         User creator = userRepository.findById(AuthUtils.getCurrentUserId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("유저를 찾을 수 없습니다."));
 
         CampingFam campingFam = CampingFam.create(name, campSite, reservationSites);
         campingFamRepository.save(campingFam);
@@ -53,7 +53,7 @@ public class CampingFamService {
     @Transactional
     public CampingFamDto finalizeSchedule(Long campingFamId, LocalDate startDate, LocalDate endDate) {
         if (endDate.isBefore(startDate)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "종료일은 시작일 이후여야 합니다.");
+            throw new BadRequestException("종료일은 시작일 이후여야 합니다.");
         }
 
         CampingFam campingFam = findCampingFam(campingFamId);
@@ -74,11 +74,11 @@ public class CampingFamService {
 
     private CampingFam findCampingFam(Long id) {
         return campingFamRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "캠핑팸을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("캠핑팸을 찾을 수 없습니다."));
     }
 
     private CampSite findCampSite(Long campSiteId) {
         return campSiteRepository.findById(campSiteId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "캠핑장을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("캠핑장을 찾을 수 없습니다."));
     }
 }

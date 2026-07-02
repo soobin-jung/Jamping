@@ -5,15 +5,16 @@ import com.jam.ping.api.recipe.category.repository.RecipeCategoryRepository;
 import com.jam.ping.api.recipe.main.domain.Recipe;
 import com.jam.ping.api.recipe.main.dto.RecipeDto;
 import com.jam.ping.api.recipe.main.repository.RecipeRepository;
+import com.jam.ping.global.exception.BadRequestException;
+import com.jam.ping.global.exception.ConflictException;
+import com.jam.ping.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -75,15 +76,15 @@ public class RecipeService {
 
     private Recipe findRecipe(Long id) {
         return recipeRepository.findWithDetailsById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "레시피를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("레시피를 찾을 수 없습니다."));
     }
 
     private RecipeCategory findRecipeCategory(Long recipeCategoryId) {
         if (recipeCategoryId == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "카테고리는 필수입니다.");
+            throw new BadRequestException("카테고리는 필수입니다.");
         }
         return recipeCategoryRepository.findById(recipeCategoryId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "레시피 카테고리를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("레시피 카테고리를 찾을 수 없습니다."));
     }
 
     private void validateDuplicate(Long recipeCategoryId, String name, Long recipeId) {
@@ -94,7 +95,7 @@ public class RecipeService {
                 : recipeRepository.existsByRecipeCategoryIdAndNameIgnoreCaseAndIdNot(recipeCategoryId, normalizedName, recipeId);
 
         if (duplicated) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "같은 카테고리에 동일한 레시피명이 이미 존재합니다.");
+            throw new ConflictException("같은 카테고리에 동일한 레시피명이 이미 존재합니다.");
         }
     }
 }

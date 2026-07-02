@@ -5,12 +5,12 @@ import com.jam.ping.api.notification.domain.Notification;
 import com.jam.ping.api.notification.dto.NotificationDto;
 import com.jam.ping.api.notification.repository.NotificationRepository;
 import com.jam.ping.api.user.main.domain.User;
+import com.jam.ping.global.exception.ForbiddenException;
+import com.jam.ping.global.exception.NotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -33,10 +33,10 @@ public class NotificationService {
     @Transactional
     public void markAsRead(Long notificationId, Long userId) {
         Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "알림을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("알림을 찾을 수 없습니다."));
 
         if (!notification.getReceiver().getId().equals(userId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "권한이 없습니다.");
+            throw new ForbiddenException("권한이 없습니다.");
         }
 
         notification.read();

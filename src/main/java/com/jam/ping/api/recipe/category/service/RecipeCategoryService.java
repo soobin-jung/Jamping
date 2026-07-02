@@ -3,15 +3,15 @@ package com.jam.ping.api.recipe.category.service;
 import com.jam.ping.api.recipe.category.domain.RecipeCategory;
 import com.jam.ping.api.recipe.category.dto.RecipeCategoryDto;
 import com.jam.ping.api.recipe.category.repository.RecipeCategoryRepository;
+import com.jam.ping.global.exception.ConflictException;
+import com.jam.ping.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -61,7 +61,7 @@ public class RecipeCategoryService {
 
     RecipeCategory findRecipeCategory(Long id) {
         return recipeCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "레시피 카테고리를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("레시피 카테고리를 찾을 수 없습니다."));
     }
 
     private void validateDuplicateName(String name, Long id) {
@@ -72,7 +72,7 @@ public class RecipeCategoryService {
                 : recipeCategoryRepository.existsByNameIgnoreCaseAndIdNot(normalizedName, id);
 
         if (duplicated) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 등록된 카테고리명입니다.");
+            throw new ConflictException("이미 등록된 카테고리명입니다.");
         }
     }
 }

@@ -4,15 +4,16 @@ import com.jam.ping.api.user.main.code.UserRole;
 import com.jam.ping.api.user.main.domain.User;
 import com.jam.ping.api.user.main.dto.UserDto;
 import com.jam.ping.api.user.main.repository.UserRepository;
+import com.jam.ping.global.exception.ConflictException;
+import com.jam.ping.global.exception.NotFoundException;
+import com.jam.ping.global.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +54,7 @@ public class UserService {
 
     public User getActorUser(Long userId) {
         if (userId == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "인증된 사용자 정보를 찾을 수 없습니다.");
+            throw new UnauthorizedException("인증된 사용자 정보를 찾을 수 없습니다.");
         }
         return findUser(userId);
     }
@@ -63,7 +64,7 @@ public class UserService {
         User user = findUser(userId);
 
         if (user.getRole() == role) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 동일한 권한을 가진 사용자입니다.");
+            throw new ConflictException("이미 동일한 권한을 가진 사용자입니다.");
         }
 
         user.changeRole(role);
@@ -72,6 +73,6 @@ public class UserService {
 
     private User findUser(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
     }
 }

@@ -5,14 +5,14 @@ import com.jam.ping.api.campingfam.menu.code.MealType;
 import com.jam.ping.api.campingfam.menu.domain.CampingFamMenu;
 import com.jam.ping.api.campingfam.menu.dto.CampingFamMenuDto;
 import com.jam.ping.api.campingfam.menu.repository.CampingFamMenuRepository;
+import com.jam.ping.global.exception.ForbiddenException;
+import com.jam.ping.global.exception.NotFoundException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -39,10 +39,10 @@ public class CampingFamMenuService {
     @Transactional
     public CampingFamMenuDto updateMenu(Long campingFamId, Long menuId, String menu) {
         CampingFamMenu campingFamMenu = campingFamMenuRepository.findById(menuId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "메뉴를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("메뉴를 찾을 수 없습니다."));
 
         if (!campingFamMenu.getCampingFam().getId().equals(campingFamId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 캠핑팸의 메뉴가 아닙니다.");
+            throw new ForbiddenException("해당 캠핑팸의 메뉴가 아닙니다.");
         }
 
         campingFamMenu.update(menu);

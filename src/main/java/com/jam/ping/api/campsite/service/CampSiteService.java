@@ -5,16 +5,17 @@ import com.jam.ping.api.campsite.dto.CampSiteDto;
 import com.jam.ping.api.campsite.repository.CampSiteRepository;
 import com.jam.ping.api.regeion.district.code.DistrictCode;
 import com.jam.ping.api.regeion.region.code.RegionCode;
+import com.jam.ping.global.exception.BadRequestException;
+import com.jam.ping.global.exception.ConflictException;
+import com.jam.ping.global.exception.NotFoundException;
 import java.time.LocalTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -98,7 +99,7 @@ public class CampSiteService {
 
     private CampSite findCampSite(Long campSiteId) {
         return campSiteRepository.findById(campSiteId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "캠핑장을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("캠핑장을 찾을 수 없습니다."));
     }
 
     private void validateDuplicate(String name, Long campSiteId) {
@@ -107,17 +108,17 @@ public class CampSiteService {
                 : campSiteRepository.existsByNameIgnoreCaseAndIdNot(name, campSiteId);
 
         if (duplicated) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 등록된 캠핑장 이름입니다.");
+            throw new ConflictException("이미 등록된 캠핑장 이름입니다.");
         }
     }
 
     private void validateLocation(RegionCode regionCode, DistrictCode districtCode) {
         if (regionCode == null || districtCode == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "지역구와 자치구는 필수입니다.");
+            throw new BadRequestException("지역구와 자치구는 필수입니다.");
         }
 
         if (districtCode.getRegionCode() != regionCode) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "자치구가 선택한 지역구에 속하지 않습니다.");
+            throw new BadRequestException("자치구가 선택한 지역구에 속하지 않습니다.");
         }
     }
 

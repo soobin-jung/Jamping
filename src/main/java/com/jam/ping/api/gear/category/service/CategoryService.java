@@ -3,15 +3,15 @@ package com.jam.ping.api.gear.category.service;
 import com.jam.ping.api.gear.category.domain.Category;
 import com.jam.ping.api.gear.category.dto.CategoryDto;
 import com.jam.ping.api.gear.category.repository.CategoryRepository;
+import com.jam.ping.global.exception.ConflictException;
+import com.jam.ping.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -61,7 +61,7 @@ public class CategoryService {
 
     private Category findCategory(Long categoryId) {
         return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("카테고리를 찾을 수 없습니다."));
     }
 
     private void validateDuplicateName(String name, Long categoryId) {
@@ -72,7 +72,7 @@ public class CategoryService {
                 : categoryRepository.existsByNameIgnoreCaseAndIdNot(normalizedName, categoryId);
 
         if (duplicated) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 등록된 카테고리명입니다.");
+            throw new ConflictException("이미 등록된 카테고리명입니다.");
         }
     }
 }

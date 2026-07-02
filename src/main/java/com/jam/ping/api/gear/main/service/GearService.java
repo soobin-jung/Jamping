@@ -7,15 +7,16 @@ import com.jam.ping.api.gear.main.dto.GearDto;
 import com.jam.ping.api.gear.main.repository.GearRepository;
 import com.jam.ping.api.gear.maker.domain.Maker;
 import com.jam.ping.api.gear.maker.repository.MakerRepository;
+import com.jam.ping.global.exception.BadRequestException;
+import com.jam.ping.global.exception.ConflictException;
+import com.jam.ping.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -93,23 +94,23 @@ public class GearService {
 
     private Gear findGear(Long gearId) {
         return gearRepository.findWithDetailsById(gearId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "용품을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("용품을 찾을 수 없습니다."));
     }
 
     private Category findCategory(Long categoryId) {
         if (categoryId == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "카테고리는 필수입니다.");
+            throw new BadRequestException("카테고리는 필수입니다.");
         }
         return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("카테고리를 찾을 수 없습니다."));
     }
 
     private Maker findMaker(Long makerId) {
         if (makerId == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "메이커는 필수입니다.");
+            throw new BadRequestException("메이커는 필수입니다.");
         }
         return makerRepository.findById(makerId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "메이커를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("메이커를 찾을 수 없습니다."));
     }
 
     private void validateDuplicate(Long categoryId, Long makerId, String name, Long gearId) {
@@ -120,7 +121,7 @@ public class GearService {
                 : gearRepository.existsByCategoryIdAndMakerIdAndNameIgnoreCaseAndIdNot(categoryId, makerId, normalizedName, gearId);
 
         if (duplicated) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 등록된 장비입니다.");
+            throw new ConflictException("이미 등록된 장비입니다.");
         }
     }
 }

@@ -8,16 +8,17 @@ import com.jam.ping.api.gear.review.dto.ReviewDto;
 import com.jam.ping.api.gear.review.repository.ReviewRepository;
 import com.jam.ping.api.user.main.domain.User;
 import com.jam.ping.api.user.main.service.UserService;
+import com.jam.ping.global.exception.ConflictException;
+import com.jam.ping.global.exception.ForbiddenException;
+import com.jam.ping.global.exception.NotFoundException;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +50,7 @@ public class ReviewService {
         User actorUser = userService.getActorUser(actorUserId);
 
         if (reviewRepository.existsByGearIdAndUserId(gearId, actorUserId)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 해당 장비에 후기를 작성했습니다.");
+            throw new ConflictException("이미 해당 장비에 후기를 작성했습니다.");
         }
 
         Review review = Review.create(gear, actorUser, rating, content.trim(), ReviewStatus.ACTIVE);
@@ -80,7 +81,7 @@ public class ReviewService {
         Review review = findReview(gearId, reviewId);
 
         if (review.getStatus() == ReviewStatus.INACTIVE) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 비활성화된 후기입니다.");
+            throw new ConflictException("이미 비활성화된 후기입니다.");
         }
 
         User moderator = userService.getActorUser(actorUserId);
@@ -93,7 +94,7 @@ public class ReviewService {
         Review review = findReview(gearId, reviewId);
 
         if (review.getStatus() == ReviewStatus.ACTIVE) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 활성화된 후기입니다.");
+            throw new ConflictException("이미 활성화된 후기입니다.");
         }
 
         review.activate();
@@ -120,23 +121,23 @@ public class ReviewService {
 
     private Gear findGear(Long gearId) {
         return gearRepository.findById(gearId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "장비를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("장비를 찾을 수 없습니다."));
     }
 
     private Review findReview(Long gearId, Long reviewId) {
         return reviewRepository.findByIdAndGearId(reviewId, gearId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "후기를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("후기를 찾을 수 없습니다."));
     }
 
     private void validateOwner(Review review, Long actorUserId) {
         if (actorUserId == null || !review.getUser().getId().equals(actorUserId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인 후기만 수정하거나 삭제할 수 있습니다.");
+            throw new ForbiddenException("본인 후기만 수정하거나 삭제할 수 있습니다.");
         }
     }
 
     private void validateActiveForOwnerAction(Review review) {
         if (review.getStatus() != ReviewStatus.ACTIVE) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "후기를 찾을 수 없습니다.");
+            throw new NotFoundException("후기를 찾을 수 없습니다.");
         }
     }
 }

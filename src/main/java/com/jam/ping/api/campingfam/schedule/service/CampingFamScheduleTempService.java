@@ -5,13 +5,12 @@ import com.jam.ping.api.campingfam.main.repository.CampingFamRepository;
 import com.jam.ping.api.campingfam.schedule.domain.CampingFamScheduleTemp;
 import com.jam.ping.api.campingfam.schedule.dto.CampingFamScheduleTempDto;
 import com.jam.ping.api.campingfam.schedule.repository.CampingFamScheduleTempRepository;
+import com.jam.ping.global.exception.NotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +52,6 @@ public class CampingFamScheduleTempService {
 
     private CampingFam findCampingFam(Long campingFamId) {
         return campingFamRepository.findById(campingFamId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "캠핑팸을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("캠핑팸을 찾을 수 없습니다."));
     }
 }
